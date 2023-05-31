@@ -1,5 +1,5 @@
   <a href="">
-  <img alt="Chatjet.ai – Enterprise-grade AI chatbots for your website and docs" src="https://github.com/chatjet-ai/chatjet.ai/blob/main/Group%205.png?raw"
+  <img alt="Chatjet.ai – Enterprise-grade AI chatbots for your website and docs" src="https://github.com/chatjet-ai/chatjet.ai/blob/main/public/static/Group%207.png?raw=true)"
   <h1 align="center"></h1>
 </a>
 <br/>
