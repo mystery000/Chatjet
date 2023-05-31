@@ -5,15 +5,10 @@
 
 Chatjet.ai is a platform for building GPT-powered prompts. It takes Markdown, Markdoc, MDX, HTML and plain text files (from a GitHub repo, website or file uploads), and creates embeddings that you can use to create a prompt, for instance using the companion [Chatjet.ai React or Web component](https://Chatjet.ai.com/docs#components). Chatjet.ai also offers analytics, so you can gain insights on how visitors interact with your docs.
 
-<br />
-<br />
 
 <p align="center">
   <a href="https://twitter.com/Chatjet.ai">
     <img alt="Twitter" src="https://img.shields.io/twitter/follow/Chatjet.ai?style=flat&label=%40Chatjet.ai&logo=twitter&color=0bf&logoColor=fff" />
-  </a>
-  <a aria-label="NPM version" href="https://www.npmjs.com/package/Chatjet.ai">
-    <img alt="NPM version" src="https://badgen.net/npm/v/Chatjet.ai">
   </a>
   <a aria-label="License" href="https://github.com/motifland/Chatjet.ai/blob/main/LICENSE">
     <img alt="License" src="https://img.shields.io/badge/License-Apache_2.0-blue.svg">
