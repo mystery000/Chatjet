@@ -1,0 +1,1 @@
+alter type source_type add value 'website' after 'motif';
