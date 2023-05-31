@@ -1,5 +1,5 @@
 <a href="https://chatjet.ai">
-  <img alt="Chatjet.ai – Enterprise-grade AI chatbots for your website and docs" src="https://github.com/motifland/Chatjet.ai-js/assets/504893/9df7ac5a-1ac3-4b33-9bb3-a146d119ed73">
+  <img alt="Chatjet.ai – Enterprise-grade AI chatbots for your website and docs" src="[https://github.com/motifland/Chatjet.ai-js/assets/504893/9df7ac5a-1ac3-4b33-9bb3-a146d119ed73](https://github.com/chatjet-ai/chatjet.ai/blob/main/Group%203.png?raw=true)">
   <h1 align="center">Chatjet.ai</h1>
 </a>
 
@@ -22,9 +22,9 @@ Chatjet.ai is a platform for building GPT-powered prompts. It takes Markdown, Ma
 
 ## Documentation
 
-To use the Chatjet.ai platform as is, please refer to the [Chatjet.ai documentation](https://Chatjet.ai.com/docs).
+To use the Chatjet.ai platform as is, please refer to the [Chatjet.ai documentation](https://Chatjet.ai/docs).
 
-## Self-hosting
+## Tech Stack
 
 Chatjet.ai is built on top of the following stack:
 
@@ -38,9 +38,6 @@ Chatjet.ai is built on top of the following stack:
 - [Plain](https://plain.com/) - support chat
 - [Fathom](https://usefathom.com/) - analytics
 
-### Supabase
-
-Supabase is used for storage and auth, and if self-hosting, you will need to set it up on the [Supabase admin console](https://app.supabase.com/).
 
 #### Schema
 
