@@ -4,7 +4,7 @@
 </a>
 
 
-Chatjet.ai is a platform for building GPT-powered chatbots. It takes Markdown, Markdoc, MDX, HTML and plain text files (from a GitHub repo, website or file uploads), and creates embeddings that you can use to create a prompt, for instance using the companion [Chatjet.ai React or Web component](https://Chatjet.ai.com/docs#components). Chatjet.ai also offers analytics, so you can gain insights on how visitors interact with your docs.
+Chatjet.ai is a platform for building GPT-powered chatbots. It takes Markdown, Markdoc, MDX, HTML and plain text files (from a GitHub repo, website or file uploads), and creates embeddings that you can use to create a prompt, for instance using the companion [Chatjet.ai React or Web component](https://Chatjet.ai.com/docs#components). Chatjet.ai also offers analytics, so you can gain insights on how visitors interact with your chatbot.
 
 <p align="center">
   <a href="https://twitter.com/Chatjet.ai">
