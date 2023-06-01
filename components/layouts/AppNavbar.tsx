@@ -7,11 +7,11 @@ import { useAppContext } from '@/lib/context/app';
 import useOnboarding from '@/lib/hooks/use-onboarding';
 import useUser from '@/lib/hooks/use-user';
 
-import { MarkpromptIcon } from '../icons/Markprompt';
 import TeamProjectPicker from '../team/TeamProjectPicker';
 import Button from '../ui/Button';
 import { ContactWindow } from '../user/ChatWindow';
 import ProfileMenu from '../user/ProfileMenu';
+import Image from 'next/image';
 
 type AppNavbarProps = {
   animated?: boolean;
@@ -31,7 +31,7 @@ export const AppNavbar: FC<AppNavbarProps> = ({ animated }) => {
     >
       <div className="flex-none">
         <Link href="/" className="outline-none">
-          <MarkpromptIcon className="mx-auto h-8 w-8 text-white" />
+          <Image src="/static/logo.png" width={128} height={32} className="mx-auto text-white" alt="chatjet.ai" />
         </Link>
       </div>
       {!!user?.has_completed_onboarding && !loadingUser && (

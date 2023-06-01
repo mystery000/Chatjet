@@ -4,10 +4,10 @@ import { ThemeMinimal } from '@supabase/auth-ui-shared';
 import Link from 'next/link';
 import { FC } from 'react';
 
-import { MarkpromptIcon } from '@/components/icons/Markprompt';
 import Button from '@/components/ui/Button';
 import useUser from '@/lib/hooks/use-user';
 import { getAppOrigin } from '@/lib/utils.edge';
+import Image from 'next/image';
 
 type AuthPageProps = {
   type: 'signin' | 'signup';
@@ -22,7 +22,7 @@ const AuthPage: FC<AuthPageProps> = ({ type }) => {
     <div className="px-6 sm:px-8">
       <div className="mx-auto w-min">
         <Link href="/">
-          <MarkpromptIcon className="mx-auto mt-16 h-16 w-16 text-white outline-none" />
+          <Image src="/static/logo.png" width={256} height={64} className="mx-auto text-white" alt="chatjet.ai" />
         </Link>
       </div>
       {!session ? (

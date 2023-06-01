@@ -31,13 +31,13 @@ export const getStaticProps: GetStaticProps = async () => {
 const Index: FC<InferGetStaticPropsType<typeof getStaticProps>> = ({
   stars,
 }) => {
-  const session = useSession();
+  // const session = useSession();
 
-  if (!session) {
-    return <LandingPage stars={stars} />;
-  } else {
+  // if (!session) {
+  //   return <LandingPage stars={stars} />;
+  // } else {
     return <AppPage />;
-  }
+  // }
 };
 
 export default memo(Index);

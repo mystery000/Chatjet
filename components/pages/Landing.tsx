@@ -8,7 +8,6 @@ import Balancer from 'react-wrap-balancer';
 import { AngeListIcon } from '@/components/icons/AngelList';
 import { CalIcon } from '@/components/icons/Cal';
 import { GitHubIcon } from '@/components/icons/GitHub';
-import { MarkpromptIcon } from '@/components/icons/Markprompt';
 import { MotifIcon } from '@/components/icons/Motif';
 import { ReploIcon } from '@/components/icons/Replo';
 import { TwitterIcon } from '@/components/icons/Twitter';
@@ -26,6 +25,7 @@ import { DiscordIcon } from '../icons/Discord';
 import { ListItem } from '../ui/ListItem';
 import { Segment } from '../ui/Segment';
 import { Tag } from '../ui/Tag';
+import Image from 'next/image';
 
 const PricingCard = ({
   tier,
@@ -298,8 +298,7 @@ const LandingPage: FC<LandingPageProps> = ({ stars }) => {
             </p>
           </div>
           <div className="sticky inset-x-0 top-0 z-10 flex h-12 flex-none flex-row items-center gap-4 border-b border-neutral-900 px-4 py-2">
-            <MarkpromptIcon className="ml-1 h-6 w-6 text-neutral-300" />
-            <p className="text-sm text-neutral-500">Acme Inc</p>
+            <Image src="/static/logo.png" width={96} height={24} className="mx-auto text-white" alt="chatjet.ai" />
           </div>
           <div className="absolute inset-x-0 top-12 bottom-0 z-0 grid w-full flex-grow grid-cols-4">
             <div className="hidden h-full flex-col gap-1 border-r border-neutral-900 px-3 py-3 text-sm text-neutral-500 sm:flex">

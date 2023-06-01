@@ -4,8 +4,8 @@ import Link from 'next/link';
 
 import { DiscordIcon } from '../icons/Discord';
 import { GitHubIcon } from '../icons/GitHub';
-import { MarkpromptIcon } from '../icons/Markprompt';
 import { ContactWindow } from '../user/ChatWindow';
+import Image from 'next/image';
 
 export default function LandingNavbar({
   noAnimation,
@@ -22,10 +22,7 @@ export default function LandingNavbar({
     >
       <Link href="/">
         <div className="flex flex-none flex-row items-center gap-4 text-white">
-          <MarkpromptIcon className="mx-auto h-10 w-10 text-white" />
-          <div className="hidden text-lg font-semibold transition hover:opacity-80 lg:block">
-            Markprompt
-          </div>
+          <Image src="/static/logo.png" width={160} height={40} className="mx-auto text-white" alt="chatjet.ai" />
         </div>
       </Link>{' '}
       <div className="flex-grow" />
