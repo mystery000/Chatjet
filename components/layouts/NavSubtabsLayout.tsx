@@ -3,7 +3,6 @@ import Head from 'next/head';
 import { FC, JSXElementConstructor, ReactNode } from 'react';
 
 import useUser from '@/lib/hooks/use-user';
-
 import { NavLayout } from './NavLayout';
 import SubTabs, { SubTabItem } from './SubTabs';
 
@@ -29,8 +28,8 @@ export const NavSubtabsLayout: FC<NavSubtabsLayoutProps> = ({
   children,
 }) => {
   const { user, loading: loadingUser } = useUser();
-  const width = !w ? 'lg' : w;
-
+  const width = !w ? 'lg' : w;4
+  // console.log(loadingUser)
   return (
     <>
       <Head>
