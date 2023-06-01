@@ -1,8 +1,7 @@
   <a href="">
-  <img alt="Chatjet.ai – Enterprise-grade AI chatbots for your website and docs" src="https://github.com/chatjet-ai/chatjet.ai/blob/main/Group%205.png?raw"
+  <br> <img alt="Chatjet.ai – Enterprise-grade AI chatbots for your website and docs" src="https://github.com/chatjet-ai/chatjet.ai/blob/main/public/static/Group%209.png?raw=true)" </br>
   <h1 align="center"></h1>
 </a>
-<br/>
 
 
 Chatjet.ai is a platform for building GPT-powered chatbots. It takes Markdown, Markdoc, MDX, HTML and plain text files (from a GitHub repo, website or file uploads), and creates embeddings that you can use to create a prompt, for instance using the companion [Chatjet.ai React or Web component](https://Chatjet.ai.com/docs#components). Chatjet.ai also offers analytics, so you can gain insights on how visitors interact with your docs.
