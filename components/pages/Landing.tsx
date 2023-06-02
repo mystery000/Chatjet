@@ -234,8 +234,7 @@ const LandingPage: FC<LandingPageProps> = ({ stars }) => {
                   Connect any source of content, from public websites to private
                   GitHub repos, configure the design and tone, and paste the
                   code to your website. In minutes, you have a chatbot that
-                  answers all your customers&apos; questions. If not, you will
-                  get notified and can take action.
+                  answers all your customers&apos; questions. 
                 </Balancer>
               </p>
               <div className="flex flex-col items-start justify-start gap-4 pt-8 sm:flex-row sm:items-center">
@@ -249,7 +248,7 @@ const LandingPage: FC<LandingPageProps> = ({ stars }) => {
                     href="https://twitter.com/chatjet.ai"
                     Icon={TwitterIcon}
                   >
-                    Follower on Twitter
+                    Follow us on Twitter
                     <span className="ml-2 text-neutral-600">
                       {formatNumStars(stars)}
                     </span>
