@@ -1,5 +1,6 @@
 import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 import cn from 'classnames';
+import Image from 'next/image';
 import Link from 'next/link';
 import { FC } from 'react';
 
@@ -11,7 +12,6 @@ import TeamProjectPicker from '../team/TeamProjectPicker';
 import Button from '../ui/Button';
 import { ContactWindow } from '../user/ChatWindow';
 import ProfileMenu from '../user/ProfileMenu';
-import Image from 'next/image';
 
 type AppNavbarProps = {
   animated?: boolean;

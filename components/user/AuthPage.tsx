@@ -1,13 +1,13 @@
 import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeMinimal } from '@supabase/auth-ui-shared';
+import Image from 'next/image';
 import Link from 'next/link';
 import { FC } from 'react';
 
 import Button from '@/components/ui/Button';
 import useUser from '@/lib/hooks/use-user';
 import { getAppOrigin } from '@/lib/utils.edge';
-import Image from 'next/image';
 
 type AuthPageProps = {
   type: 'signin' | 'signup';

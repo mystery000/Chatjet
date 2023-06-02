@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { DiscordIcon } from '../icons/Discord';
 import { GitHubIcon } from '../icons/GitHub';
 import { ContactWindow } from '../user/ChatWindow';
-import Image from 'next/image';
 
 export default function LandingNavbar({
   noAnimation,

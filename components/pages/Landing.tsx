@@ -1,6 +1,7 @@
 import * as Slider from '@radix-ui/react-slider';
 import { Application } from '@splinetool/runtime';
 import cn from 'classnames';
+import Image from 'next/image';
 import Link from 'next/link';
 import { FC, useEffect, useState } from 'react';
 import Balancer from 'react-wrap-balancer';
@@ -25,7 +26,6 @@ import { DiscordIcon } from '../icons/Discord';
 import { ListItem } from '../ui/ListItem';
 import { Segment } from '../ui/Segment';
 import { Tag } from '../ui/Tag';
-import Image from 'next/image';
 
 const PricingCard = ({
   tier,
