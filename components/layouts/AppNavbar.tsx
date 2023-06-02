@@ -32,7 +32,7 @@ export const AppNavbar: FC<AppNavbarProps> = ({ animated }) => {
       <div className="flex-none">
         <Link href="/" className="outline-none">
           <Image
-            src="/static/logo.png"
+            src="/static/{chatjet.ai}.svg"
             width={128}
             height={32}
             className="mx-auto text-white"

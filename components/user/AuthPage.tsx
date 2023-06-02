@@ -23,7 +23,7 @@ const AuthPage: FC<AuthPageProps> = ({ type }) => {
       <div className="mx-auto w-min">
         <Link href="/">
           <Image
-            src="/static/logo.png"
+            src="/static/{chatjet.ai}.svg"
             width={256}
             height={64}
             className="mx-auto text-white"
