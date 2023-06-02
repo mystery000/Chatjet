@@ -226,7 +226,7 @@ const LandingPage: FC<LandingPageProps> = ({ stars }) => {
               </Link>
               <h1 className="gradient-heading mt-6 text-left text-4xl leading-[36px] tracking-[-0.6px] sm:mr-[-50px] sm:text-6xl sm:leading-[64px]">
                 <Balancer>
-                  Enterprise-grade AI chatbots for your website and docs
+                  Build GPT chatbot 
                 </Balancer>
               </h1>
               <p className="z-20 mt-8 mr-[40px] max-w-screen-md text-left text-base text-neutral-500 sm:mt-4 sm:text-lg">
@@ -240,16 +240,16 @@ const LandingPage: FC<LandingPageProps> = ({ stars }) => {
               </p>
               <div className="flex flex-col items-start justify-start gap-4 pt-8 sm:flex-row sm:items-center">
                 <Button variant="cta" buttonSize="lg" href="/signup">
-                  Start for free
+                  Build Your Chatbot Now
                 </Button>
                 <div className="hidden sm:block">
                   <Button
                     variant="plain"
                     buttonSize="lg"
-                    href="https://github.com/motifland/markprompt"
-                    Icon={GitHubIcon}
+                    href="https://twitter.com/chatjet.ai"
+                    Icon={TwitterIcon}
                   >
-                    Star on GitHub
+                    Follower on Twitter
                     <span className="ml-2 text-neutral-600">
                       {formatNumStars(stars)}
                     </span>
