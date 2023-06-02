@@ -24,7 +24,7 @@ const AuthPage: FC<AuthPageProps> = ({ type }) => {
         <Link href="/">
           <Image
             src="/static/{chatjet.ai}.svg"
-            width={256}
+            width={200}
             height={64}
             className="mx-auto text-white"
             alt="chatjet.ai"
@@ -39,7 +39,7 @@ const AuthPage: FC<AuthPageProps> = ({ type }) => {
               redirectTo={getAppOrigin() + '/'}
               onlyThirdPartyProviders
               socialLayout="vertical"
-              providers={['github', 'google']}
+              providers={['github', 'google', 'email']}
               supabaseClient={supabase}
               appearance={{ theme: ThemeMinimal }}
               theme="default"
