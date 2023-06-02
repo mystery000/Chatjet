@@ -245,7 +245,7 @@ const LandingPage: FC<LandingPageProps> = ({ stars }) => {
                   <Button
                     variant="plain"
                     buttonSize="lg"
-                    href="https://twitter.com/chatjet.ai"
+                    href="https://twitter.com/ChatjetAi"
                     Icon={TwitterIcon}
                   >
                     Follow us on Twitter
