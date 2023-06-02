@@ -22,7 +22,12 @@ export default function LandingNavbar({
     >
       <Link href="/">
         <div className="flex flex-none flex-row items-center gap-4 text-white">
-          <Image src="/static/logo.png" width={160} height={40} className="mx-auto text-white" alt="chatjet.ai" />
+        <img
+         src="/static/{chatjet.ai}.svg"
+         width={160}
+         height={40}
+         className="mx-auto text-white"
+         alt="chatjet.ai"/>
         </div>
       </Link>{' '}
       <div className="flex-grow" />
@@ -30,7 +35,7 @@ export default function LandingNavbar({
         className="hidden transform whitespace-nowrap text-sm font-medium text-white opacity-60 hover:opacity-100 sm:block"
         href="/resources/overview"
       >
-        Why Markprompt
+        Why Chatjet
       </Link>
       <Link
         className="hidden transform whitespace-nowrap text-sm font-medium text-white opacity-60 hover:opacity-100 md:block"
@@ -86,15 +91,15 @@ export default function LandingNavbar({
       )}
       <a
         className="hidden transform text-sm font-medium text-white opacity-60 hover:opacity-100 lg:block"
-        href="https://github.com/motifland/markprompt"
-        aria-label="Markprompt on GitHub"
+        href="https://github.com/motifland/Chatjet"
+        aria-label="Chatjet on GitHub"
       >
         <GitHubIcon className="h-5 w-5" />
       </a>
       <a
         className="hidden transform text-sm font-medium text-white opacity-60 hover:opacity-100 lg:block"
         href="https://discord.gg/MBMh4apz6X"
-        aria-label="Markprompt on Discord"
+        aria-label="Chatjet on Discord"
       >
         <DiscordIcon className="h-5 w-5" />
       </a>
