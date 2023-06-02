@@ -226,7 +226,7 @@ const LandingPage: FC<LandingPageProps> = ({ stars }) => {
               </Link>
               <h1 className="gradient-heading mt-6 text-left text-4xl leading-[36px] tracking-[-0.6px] sm:mr-[-50px] sm:text-6xl sm:leading-[64px]">
                 <Balancer>
-                  Build GPT chatbot 
+                  Build,Train and Deploy Custom GPT chatbots
                 </Balancer>
               </h1>
               <p className="z-20 mt-8 mr-[40px] max-w-screen-md text-left text-base text-neutral-500 sm:mt-4 sm:text-lg">
