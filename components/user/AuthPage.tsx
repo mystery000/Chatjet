@@ -22,7 +22,13 @@ const AuthPage: FC<AuthPageProps> = ({ type }) => {
     <div className="px-6 sm:px-8">
       <div className="mx-auto w-min">
         <Link href="/">
-          <Image src="/static/logo.png" width={256} height={64} className="mx-auto text-white" alt="chatjet.ai" />
+          <Image
+            src="/static/logo.png"
+            width={256}
+            height={64}
+            className="mx-auto text-white"
+            alt="chatjet.ai"
+          />
         </Link>
       </div>
       {!session ? (

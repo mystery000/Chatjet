@@ -22,12 +22,13 @@ export default function LandingNavbar({
     >
       <Link href="/">
         <div className="flex flex-none flex-row items-center gap-4 text-white">
-        <img
-         src="/static/{chatjet.ai}.svg"
-         width={160}
-         height={40}
-         className="mx-auto text-white"
-         alt="chatjet.ai"/>
+          <img
+            src="/static/{chatjet.ai}.svg"
+            width={160}
+            height={40}
+            className="mx-auto text-white"
+            alt="chatjet.ai"
+          />
         </div>
       </Link>{' '}
       <div className="flex-grow" />

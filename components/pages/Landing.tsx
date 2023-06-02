@@ -298,7 +298,13 @@ const LandingPage: FC<LandingPageProps> = ({ stars }) => {
             </p>
           </div>
           <div className="sticky inset-x-0 top-0 z-10 flex h-12 flex-none flex-row items-center gap-4 border-b border-neutral-900 px-4 py-2">
-            <Image src="/static/logo.png" width={96} height={24} className="mx-auto text-white" alt="chatjet.ai" />
+            <Image
+              src="/static/logo.png"
+              width={96}
+              height={24}
+              className="mx-auto text-white"
+              alt="chatjet.ai"
+            />
           </div>
           <div className="absolute inset-x-0 top-12 bottom-0 z-0 grid w-full flex-grow grid-cols-4">
             <div className="hidden h-full flex-col gap-1 border-r border-neutral-900 px-3 py-3 text-sm text-neutral-500 sm:flex">

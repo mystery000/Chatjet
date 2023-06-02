@@ -28,7 +28,8 @@ export const NavSubtabsLayout: FC<NavSubtabsLayoutProps> = ({
   children,
 }) => {
   const { user, loading: loadingUser } = useUser();
-  const width = !w ? 'lg' : w;4
+  const width = !w ? 'lg' : w;
+  4;
   // console.log(loadingUser)
   return (
     <>

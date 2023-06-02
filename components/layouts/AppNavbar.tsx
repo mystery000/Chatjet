@@ -31,7 +31,13 @@ export const AppNavbar: FC<AppNavbarProps> = ({ animated }) => {
     >
       <div className="flex-none">
         <Link href="/" className="outline-none">
-          <Image src="/static/logo.png" width={128} height={32} className="mx-auto text-white" alt="chatjet.ai" />
+          <Image
+            src="/static/logo.png"
+            width={128}
+            height={32}
+            className="mx-auto text-white"
+            alt="chatjet.ai"
+          />
         </Link>
       </div>
       {!!user?.has_completed_onboarding && !loadingUser && (
