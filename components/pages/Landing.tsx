@@ -203,7 +203,7 @@ const LandingPage: FC<LandingPageProps> = ({ stars }) => {
 
   return (
     <>
-      <SharedHead title="Markprompt | Enterprise-grade AI chatbots for your website and docs" />
+      <SharedHead title="Chatjet.ai | Custom AI chatbots for your website and docs" />
       {/* <div className="z-40 bg-fuchsia-700 py-1.5 px-6 sm:px-8">
         <Link
           href="/blog/markprompt-qa"
@@ -288,7 +288,7 @@ const LandingPage: FC<LandingPageProps> = ({ stars }) => {
         </h2>
         <p className="mx-auto mt-4 max-w-screen-sm text-center text-lg text-neutral-500">
           Your users will be asking lots of questions, and will be expecting
-          quality answers. Use Markprompt&apos;s feedback and analytics features
+          quality answers. Use Chatjet&apos;s feedback and analytics features
           to pinpoint shortcomings in your content, and improve your content.
         </p>
         <div className="relative mt-20 h-[600px] w-full overflow-hidden rounded-lg border border-neutral-900">
@@ -381,19 +381,19 @@ const LandingPage: FC<LandingPageProps> = ({ stars }) => {
         </div>
         <div className="flex flex-col items-center">
           <h2 className="gradient-heading mt-40 text-center text-4xl">
-            Open source
+            Get Started
           </h2>
           <p className="mx-auto mt-4 max-w-md text-center text-lg text-neutral-500">
             <Balancer>
-              The source code is on GitHub, for you to review, run, and
-              contribute to if you like!
+              Get started today for FREE, for you to build, run, and
+              test to if you like!
             </Balancer>
           </p>
           <div className="mt-12">
             <Button
               variant="plain"
               buttonSize="lg"
-              href="https://github.com/motifland/markprompt"
+              href="https://github.com/chatjet-ai/chatjet-ai"
               Icon={GitHubIcon}
             >
               Star on GitHub
@@ -412,7 +412,7 @@ const LandingPage: FC<LandingPageProps> = ({ stars }) => {
               className="border-b border-dotted border-neutral-700 text-neutral-300"
               href="https://motif.land"
             >
-              Motif
+              Chatjet.ai
             </a>{' '}
             team
           </div>
