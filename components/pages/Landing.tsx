@@ -225,11 +225,11 @@ const LandingPage: FC<LandingPageProps> = ({ stars }) => {
         <div className="animate-slide-up">
           <div className="grid grid-cols-1 gap-8 pb-24 sm:min-h-[calc(100vh-100px)] sm:grid-cols-5">
             <div className="col-span-3 mt-12 flex flex-col justify-center 2xl:mt-0">
-              <Link href="/blog/introducing-website-sources">
+              {/* <Link href="/blog/introducing-website-sources">
                 <Tag size="base" color="sky">
                   Introducing website sources →
                 </Tag>
-              </Link>
+              </Link> */}
               <h1 className="gradient-heading mt-6 text-left text-4xl leading-[36px] tracking-[-0.6px] sm:mr-[-50px] sm:text-6xl sm:leading-[64px]">
                 <Balancer>
                   Enterprise-grade ChatGPT for your website and docs

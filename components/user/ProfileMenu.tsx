@@ -66,7 +66,7 @@ const ProfileMenu = () => {
             </>
           )}
           <DropdownMenu.Separator className="dropdown-menu-separator" />
-          <DropdownMenu.Item asChild>
+          {/* <DropdownMenu.Item asChild>
             <a
               className="dropdown-menu-item dropdown-menu-item-noindent block"
               href="/blog"
@@ -75,7 +75,7 @@ const ProfileMenu = () => {
             >
               Blog
             </a>
-          </DropdownMenu.Item>
+          </DropdownMenu.Item> */}
           <DropdownMenu.Item asChild>
             <a
               className="dropdown-menu-item dropdown-menu-item-noindent block"
