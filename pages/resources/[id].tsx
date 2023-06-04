@@ -7,7 +7,7 @@ import { SharedHead } from '@/components/pages/SharedHead';
 import { getMarkdocStaticProps } from '@/lib/pages';
 
 let pageIds:any=[];
-if(process.env.MOTIF_RESOURCES_PAGE_IDS !== "") {
+if(process.env.MOTIF_RESOURCES_PAGE_IDS !== "" && process.env.MOTIF_RESOURCES_PAGE_IDS) {
   pageIds = JSON.parse(process.env.MOTIF_RESOURCES_PAGE_IDS!);
 } 
 export const getStaticPaths = async () => {
