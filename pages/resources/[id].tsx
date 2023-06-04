@@ -6,8 +6,10 @@ import { ResourcesLayout } from '@/components/layouts/ResourcesLayout';
 import { SharedHead } from '@/components/pages/SharedHead';
 import { getMarkdocStaticProps } from '@/lib/pages';
 
-const pageIds = JSON.parse(process.env.MOTIF_RESOURCES_PAGE_IDS!);
-
+let pageIds:any=[];
+if(process.env.MOTIF_RESOURCES_PAGE_IDS !== "") {
+  pageIds = JSON.parse(process.env.MOTIF_RESOURCES_PAGE_IDS!);
+} 
 export const getStaticPaths = async () => {
   if(pageIds) {
     return {
