@@ -3,16 +3,18 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { track } from '@/lib/posthog';
 import { Database } from '@/types/supabase';
-import { Project } from '@/types/types';
+import { ApiError, Project } from '@/types/types';
 
 import {
+  checkWhitelistedDomainIfProjectKey,
+  getProjectIdFromKey,
   getProjectIdFromToken,
   noProjectForTokenResponse,
   noTokenOrProjectKeyResponse,
 } from './common';
 import { checkCompletionsRateLimits } from '../rate-limits';
-import { getAuthorizationToken, isSKTestKey, truncateMiddle } from '../utils';
-import { isAppHost, removeSchema } from '../utils.edge';
+import { getAuthorizationToken, truncateMiddle } from '../utils';
+import { removeSchema } from '../utils.edge';
 
 // Admin access to Supabase, bypassing RLS.
 const supabaseAdmin = createClient<Database>(
@@ -100,52 +102,22 @@ export default async function CompletionsMiddleware(req: NextRequest) {
   }
 
   if (projectKey) {
-    const _isSKTestKey = isSKTestKey(projectKey);
-
-    // Admin supabase needed here, as the projects table is subject to RLS
-    const { data } = await supabaseAdmin
-      .from('projects')
-      .select('id')
-      .match(
-        _isSKTestKey
-          ? { private_dev_api_key: projectKey }
-          : { public_api_key: projectKey },
-      )
-      .limit(1)
-      .select()
-      .maybeSingle();
-
-    if (!data?.id) {
-      console.error('Project not found', truncateMiddle(projectKey || ''));
-      return new Response(
-        `No project with projectKey ${truncateMiddle(
-          projectKey,
-        )} was found. Please provide a valid project key. You can obtain your project key in the Markprompt dashboard, under project settings.`,
-        { status: 404 },
+    try {
+      projectId = await getProjectIdFromKey(supabaseAdmin, projectKey);
+      // Now that we have a project id, we need to check that the
+      // the project has whitelisted the domain the request comes from.
+      // Admin supabase needed here, as the projects table is subject to RLS.
+      // We bypass this check if the key is a test key or if the request
+      // comes from the app host (e.g. markprompt.com/s/[key]]).
+      await checkWhitelistedDomainIfProjectKey(
+        supabaseAdmin,
+        projectKey,
+        projectId,
+        requesterHost,
       );
-    }
-
-    projectId = data.id;
-
-    // Now that we have a project id, we need to check that the
-    // the project has whitelisted the domain the request comes from.
-    // Admin supabase needed here, as the projects table is subject to RLS.
-    // We bypass this check if the key is a test key or if the request
-    // comes from the app host (e.g. markprompt.com/s/[key]]).
-    if (!_isSKTestKey && !isAppHost(requesterHost!)) {
-      const { count } = await supabaseAdmin
-        .from('domains')
-        .select('id', { count: 'exact' })
-        .match({ project_id: projectId, name: requesterHost });
-
-      if (count === 0) {
-        return new Response(
-          `The domain ${requesterHost} is not allowed to access completions for the project with key ${truncateMiddle(
-            projectKey,
-          )}. If you need to access completions from a non-whitelisted domain, such as localhost, use a test project key instead.`,
-          { status: 401 },
-        );
-      }
+    } catch (e) {
+      const apiError = e as ApiError;
+      return new Response(apiError.message, { status: apiError.code });
     }
   }
 
@@ -155,8 +127,6 @@ export default async function CompletionsMiddleware(req: NextRequest) {
       { status: 401 },
     );
   }
-
-  track(projectId, 'generate completions', { projectId });
 
   return NextResponse.rewrite(
     new URL(`/api/v1/openai/completions/${projectId}`, req.url),

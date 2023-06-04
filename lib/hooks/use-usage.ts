@@ -1,18 +1,13 @@
-import { useMemo } from 'react';
 import useSWR from 'swr';
 
 import { FileStats } from '@/types/types';
 
-import useFiles from './use-files';
-import useSources from './use-sources';
 import useTeam from './use-team';
-import { getNumWebsitePagesPerProjectAllowance } from '../stripe/tiers';
+import { getNumTokensPerTeamAllowance } from '../stripe/tiers';
 import { fetcher } from '../utils';
 
 export default function useUsage() {
   const { team } = useTeam();
-  const { files } = useFiles();
-  const { sources } = useSources();
   const {
     data: fileStats,
     mutate,
@@ -24,23 +19,23 @@ export default function useUsage() {
 
   const loading = !fileStats && !error;
 
-  const numWebsitePagesPerProjectAllowance =
-    (team && getNumWebsitePagesPerProjectAllowance(team)) || 0;
+  const numTokensPerTeamAllowance =
+    (team &&
+      getNumTokensPerTeamAllowance(
+        !!team.is_enterprise_plan,
+        team.stripe_price_id,
+      )) ||
+    0;
 
-  const numWebsitePagesInProject = useMemo(() => {
-    const websiteSourceIds = sources
-      .filter((s) => s.type === 'website')
-      .map((s) => s.id);
-    const websiteFiles = files?.filter(
-      (f) => f.source_id && websiteSourceIds.includes(f.source_id),
-    );
-    return websiteFiles?.length || 0;
-  }, [sources, files]);
+  const numTokensPerTeamRemainingAllowance =
+    numTokensPerTeamAllowance === 'unlimited'
+      ? numTokensPerTeamAllowance
+      : Math.max(0, numTokensPerTeamAllowance - (fileStats?.tokenCount || 0));
 
   return {
-    numFilesInAllProjects: fileStats?.numFiles || 0,
-    numWebsitePagesPerProjectAllowance,
-    numWebsitePagesInProject,
+    numTokensInTeam: fileStats?.tokenCount || 0,
+    numTokensPerTeamAllowance,
+    numTokensPerTeamRemainingAllowance,
     loading,
     mutate,
   };

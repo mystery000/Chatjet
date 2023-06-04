@@ -35,6 +35,7 @@ import useFiles from '@/lib/hooks/use-files';
 import useProject from '@/lib/hooks/use-project';
 import useSources from '@/lib/hooks/use-sources';
 import useTeam from '@/lib/hooks/use-team';
+import useUsage from '@/lib/hooks/use-usage';
 import {
   getIconForSource,
   getLabelForSource,
@@ -45,11 +46,9 @@ import {
 import { SourceType } from '@/types/types';
 
 import StatusMessage from './StatusMessage';
+import { UpgradeNote } from './UpgradeNote';
 import GetCode from '../dialogs/project/GetCode';
 import Share from '../dialogs/project/Share';
-import FilesAddSourceDialog from '../dialogs/sources/Files';
-import MotifAddSourceDialog from '../dialogs/sources/Motif';
-import WebsiteAddSourceDialog from '../dialogs/sources/Website';
 import { ModelConfigurator } from '../files/ModelConfigurator';
 import { Playground } from '../files/Playground';
 import { UIConfigurator } from '../files/UIConfigurator';
@@ -60,8 +59,29 @@ import Button from '../ui/Button';
 import { InfoTooltip } from '../ui/InfoTooltip';
 import { PulseDot } from '../ui/PulseDot';
 
+const WebsiteAddSourceDialog = dynamic(
+  () => import('@/components/dialogs/sources/Website'),
+  {
+    loading: () => <p className="p-4 text-sm text-neutral-500">Loading...</p>,
+  },
+);
+
 const GitHubAddSourceDialog = dynamic(
   () => import('@/components/dialogs/sources/GitHub'),
+  {
+    loading: () => <p className="p-4 text-sm text-neutral-500">Loading...</p>,
+  },
+);
+
+const MotifAddSourceDialog = dynamic(
+  () => import('@/components/dialogs/sources/Motif'),
+  {
+    loading: () => <p className="p-4 text-sm text-neutral-500">Loading...</p>,
+  },
+);
+
+const FilesAddSourceDialog = dynamic(
+  () => import('@/components/dialogs/sources/Files'),
   {
     loading: () => <p className="p-4 text-sm text-neutral-500">Loading...</p>,
   },
@@ -95,19 +115,26 @@ export const Row = ({
 
 type ConnectButtonProps = {
   label: string;
+  disabled?: boolean;
   Icon: JSXElementConstructor<any>;
   sample?: boolean;
   onClick?: () => void;
 };
 
 const ConnectButton = forwardRef<HTMLButtonElement, ConnectButtonProps>(
-  ({ label, Icon, onClick, ...props }, ref) => {
+  ({ label, Icon, onClick, disabled, ...props }, ref) => {
     return (
       <button
         {...props}
         onClick={onClick}
         ref={ref}
-        className="button-ring relative w-full rounded-lg border border-neutral-900 transition hover:bg-neutral-1000"
+        className={cn(
+          'button-ring relative w-full rounded-lg border border-neutral-900 transition hover:bg-neutral-1000',
+          {
+            'pointer-events-none opacity-50': disabled,
+          },
+        )}
+        disabled={disabled}
       >
         <div className="flex flex-row items-center gap-4 p-4 sm:p-3">
           <Icon className="h-4 w-4 flex-none text-neutral-300" />
@@ -280,6 +307,8 @@ const PlaygroundDashboard: FC<PlaygroundDashboardProps> = ({
     referencesHeading,
     loadingHeading,
   } = useConfigContext();
+  const { numTokensPerTeamRemainingAllowance, numTokensPerTeamAllowance } =
+    useUsage();
   const [overlayDimensions, setOverlayDimensions] = useState({
     previewContainerWidth: 0,
     previewContainerHeight: 0,
@@ -379,6 +408,9 @@ const PlaygroundDashboard: FC<PlaygroundDashboardProps> = ({
   const isShowingOverlay =
     project &&
     (isTraining || (!isLoading && (!hasConnectedSources || !isTrained)));
+  const canAddMoreContent =
+    numTokensPerTeamRemainingAllowance === 'unlimited' ||
+    numTokensPerTeamRemainingAllowance > 0;
 
   useEffect(() => {
     if (!isShowingOnboardingMessages) {
@@ -464,30 +496,71 @@ const PlaygroundDashboard: FC<PlaygroundDashboardProps> = ({
             </span>
             .
           </p>
-          <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-1 sm:gap-2">
-            <GitHubAddSourceDialog onDidAddSource={startTraining}>
-              <ConnectButton label="GitHub repo" Icon={GitHubIcon} />
+          {!loadingFiles && !canAddMoreContent && (
+            <UpgradeNote className="my-4" showDialog>
+              You have reached your quota of indexed content (
+              {numTokensPerTeamAllowance} tokens) on this plan. Please upgrade
+              your plan to index more content.
+            </UpgradeNote>
+          )}
+          <div
+            className={cn(
+              'mt-4 grid grid-cols-2 gap-4 sm:grid-cols-1 sm:gap-2',
+              {
+                'cursor-not-allowed': !canAddMoreContent,
+              },
+            )}
+          >
+            <GitHubAddSourceDialog
+              onDidAddSource={startTraining}
+              openPricingAsDialog
+            >
+              <ConnectButton
+                label="GitHub repo"
+                Icon={GitHubIcon}
+                disabled={!canAddMoreContent}
+              />
             </GitHubAddSourceDialog>
             <WebsiteAddSourceDialog
               onDidAddSource={startTraining}
-              openPricingAsDialog={isOnboarding}
+              openPricingAsDialog
             >
-              <ConnectButton label="Website" Icon={Globe} />
+              <ConnectButton
+                label="Website"
+                Icon={Globe}
+                disabled={!canAddMoreContent}
+              />
             </WebsiteAddSourceDialog>
             <MotifAddSourceDialog onDidAddSource={startTraining}>
-              <ConnectButton label="Motif project" Icon={MotifIcon} />
+              <ConnectButton
+                label="Motif project"
+                Icon={MotifIcon}
+                disabled={!canAddMoreContent}
+              />
             </MotifAddSourceDialog>
-            <FilesAddSourceDialog onDidAddSource={startTraining}>
-              <ConnectButton label="Upload files" Icon={Upload} />
+            <FilesAddSourceDialog
+              onDidAddSource={startTraining}
+              openPricingAsDialog
+            >
+              <ConnectButton
+                label="Upload files"
+                Icon={Upload}
+                disabled={!canAddMoreContent}
+              />
             </FilesAddSourceDialog>
           </div>
           <p className="mt-6 text-sm text-neutral-500">
             Or select a sample data source:
           </p>
-          <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-1">
+          <div
+            className={cn('mt-4 grid grid-cols-2 gap-4 sm:grid-cols-1', {
+              'cursor-not-allowed': !canAddMoreContent,
+            })}
+          >
             <ConnectButton
               label="Markprompt docs"
               Icon={GitHubIcon}
+              disabled={!canAddMoreContent}
               onClick={async () => {
                 await _addSource('github', { url: SAMPLE_REPO_URL });
               }}

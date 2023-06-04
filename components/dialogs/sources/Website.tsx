@@ -12,7 +12,7 @@ import Link from 'next/link';
 import { ChangeEvent, FC, ReactNode, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
-import { UpgradeCTA } from '@/components/team/PlanPicker';
+import { DocsLimit } from '@/components/files/DocsLimit';
 import Button from '@/components/ui/Button';
 import { ErrorLabel } from '@/components/ui/Forms';
 import { NoAutoInput } from '@/components/ui/Input';
@@ -61,7 +61,7 @@ const WebsiteSource: FC<WebsiteSourceProps> = ({
 }) => {
   const { project } = useProject();
   const { user } = useUser();
-  const { numWebsitePagesPerProjectAllowance } = useUsage();
+  const { numTokensPerTeamRemainingAllowance } = useUsage();
   const { sources, mutate } = useSources();
   const [website, setWebsite] = useState('');
 
@@ -145,23 +145,9 @@ const WebsiteSource: FC<WebsiteSourceProps> = ({
                   build on top of other people&apos;s work unless you have
                   explicit authorization to do so.
                 </Note>
-                {numWebsitePagesPerProjectAllowance !== 'unlimited' && (
-                  <div className="mt-2 flex flex-row items-center gap-2 rounded-md border border-neutral-900 p-4">
-                    <div className="flex-grow text-sm text-neutral-300">
-                      Page limit:{' '}
-                      <span className="font-semibold">
-                        {numWebsitePagesPerProjectAllowance}
-                      </span>
-                    </div>
-                    <UpgradeCTA showDialog={openPricingAsDialog}>
-                      <Button
-                        className="flex-none"
-                        buttonSize="sm"
-                        variant="plain"
-                      >
-                        Upgrade plan
-                      </Button>
-                    </UpgradeCTA>
+                {numTokensPerTeamRemainingAllowance !== 'unlimited' && (
+                  <div className="mt-2 rounded-md border border-neutral-900">
+                    <DocsLimit />
                   </div>
                 )}
               </div>

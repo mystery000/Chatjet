@@ -11,9 +11,11 @@ import {
   useState,
 } from 'react';
 import { toast } from 'react-hot-toast';
+import colors from 'tailwindcss/colors';
 import { isPresent } from 'ts-is-present';
 
 import {
+  API_ERROR_ID_CONTENT_TOKEN_QUOTA_EXCEEDED,
   FileData,
   GitHubSourceDataType,
   MotifSourceDataType,
@@ -21,7 +23,8 @@ import {
   WebsiteSourceDataType,
 } from '@/types/types';
 
-import { processFile } from '../api';
+import { clientRefreshMaterializedViews, processFile } from '../api';
+import emitter, { EVENT_OPEN_PLAN_PICKER_DIALOG } from '../events';
 import useProject from '../hooks/use-project';
 import useSources from '../hooks/use-sources';
 import useUsage from '../hooks/use-usage';
@@ -88,11 +91,6 @@ export type State = {
     onFileProcessed: () => void,
     onError: (message: string) => void,
   ) => void;
-  trainSource: (
-    source: Source,
-    onFileProcessed: () => void,
-    onError: (message: string) => void,
-  ) => void;
 };
 
 const initialState: State = {
@@ -104,8 +102,6 @@ const initialState: State = {
   stopGeneratingEmbeddings: () => {},
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   trainAllSources: () => {},
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  trainSource: () => {},
 };
 
 export const getTrainingStateMessage = (
@@ -127,31 +123,15 @@ export const getTrainingStateMessage = (
   return '';
 };
 
-const hasReachedTrainingQuota = (
-  sourceType: Source['type'],
-  numNewlyProcessedFiles: number,
-  numWebsitePagesRemainingOnPlan: number,
-) => {
-  return (
-    sourceType === 'website' &&
-    numNewlyProcessedFiles >= numWebsitePagesRemainingOnPlan
-  );
-};
-
-const isCappedSourceType = (sourceType: Source['type']) => {
-  return sourceType === 'website';
-};
-
 const TrainingContextProvider = (props: PropsWithChildren) => {
   const supabase = useSupabaseClient();
   const { project, config } = useProject();
   const { sources } = useSources();
-  const { numWebsitePagesPerProjectAllowance } = useUsage();
   const [state, setState] = useState<TrainingState>({ state: 'idle' });
   const [errors, setErrors] = useState<string[]>([]);
   const stopFlag = useRef(false);
 
-  const generateEmbeddingForFile = useCallback(
+  const _generateEmbeddingForFile = useCallback(
     async (
       index: number,
       checksums: { path: any; checksum: any }[],
@@ -178,6 +158,7 @@ const TrainingContextProvider = (props: PropsWithChildren) => {
           path,
           config.include || [],
           config.exclude || [],
+          sourceType === 'website',
         )
       ) {
         return;
@@ -215,16 +196,60 @@ const TrainingContextProvider = (props: PropsWithChildren) => {
 
       try {
         await processFile(sourceId, file);
-
-        onFileProcessed?.();
-      } catch (e) {
-        console.error(`Error processing ${file.name}: ${e}`);
-        toast.error(`Error processing file ${nameAndContent.name}: ${e}`);
-        setErrors((errors) => [
-          ...errors,
-          `Error processing ${file.name}: ${e}`,
-        ]);
+      } catch (e: any) {
+        if (
+          e.status === 403 &&
+          e.name === API_ERROR_ID_CONTENT_TOKEN_QUOTA_EXCEEDED
+        ) {
+          // If this is a quota exceeded error, throw anew in order to
+          // stop the batch processing
+          toast(
+            (t) => (
+              <div className="flex w-full flex-row items-center gap-4">
+                <p className="p-2">
+                  You have reached the quota of indexed content on this plan.
+                </p>
+                <button
+                  className="whitespace-nowrap font-medium"
+                  onClick={() => {
+                    emitter.emit(EVENT_OPEN_PLAN_PICKER_DIALOG);
+                    toast.dismiss(t.id);
+                  }}
+                  style={{
+                    // The .toast class needs to use the "!important"
+                    // flag, so we can only overwrite the text color
+                    // using a style prop.
+                    color: colors.sky['500'],
+                  }}
+                >
+                  Upgrade plan
+                </button>
+              </div>
+            ),
+            {
+              id: 'training-limit-reached',
+              duration: Infinity,
+              style: {
+                maxWidth: '400px',
+                width: '100%',
+              },
+            },
+          );
+          onFileProcessed?.();
+          setState({ state: 'idle' });
+          throw e;
+        } else {
+          // Otherwise, just show a notification and continue
+          console.error(`Error processing ${file.name}: ${e}`);
+          toast.error(`Error processing file ${nameAndContent.name}: ${e}`);
+          setErrors((errors) => [
+            ...errors,
+            `Error processing ${file.name}: ${e}`,
+          ]);
+        }
       }
+
+      onFileProcessed?.();
     },
     [config.exclude, config.include],
   );
@@ -257,29 +282,33 @@ const TrainingContextProvider = (props: PropsWithChildren) => {
       // training.
       const limit = pLimit(5);
 
-      await Promise.all(
-        Array.from(Array(numFiles).keys()).map((index) => {
-          return limit(() =>
-            generateEmbeddingForFile(
-              index,
-              checksums || [],
-              sourceId,
-              sourceType,
-              numFiles,
-              getFilePath,
-              getFileNameContent,
-              onFileProcessed,
-            ),
-          );
-        }),
-      );
+      try {
+        await Promise.all(
+          Array.from(Array(numFiles).keys()).map((index) => {
+            return limit(() =>
+              _generateEmbeddingForFile(
+                index,
+                checksums || [],
+                sourceId,
+                sourceType,
+                numFiles,
+                getFilePath,
+                getFileNameContent,
+                onFileProcessed,
+              ),
+            );
+          }),
+        );
+      } catch (e) {
+        console.error(e);
+      }
 
       setState({ state: 'idle' });
     },
-    [project?.id, supabase, generateEmbeddingForFile],
+    [project?.id, supabase, _generateEmbeddingForFile],
   );
 
-  const trainSource = useCallback(
+  const _trainSource = useCallback(
     async (
       source: Source,
       onFileProcessed: () => void,
@@ -395,9 +424,9 @@ const TrainingContextProvider = (props: PropsWithChildren) => {
             //     return url.startsWith(baseUrl);
             //   });
             //   const numAllowance =
-            //     numWebsitePagesPerProjectAllowance === 'unlimited'
+            //     numDocumentsPerProjectAllowance === 'unlimited'
             //       ? sitemapUrls.length
-            //       : numWebsitePagesPerProjectAllowance;
+            //       : numDocumentsPerProjectAllowance;
             //   await generateEmbeddingsForUrls(
             //     sitemapUrls.slice(0, numAllowance),
             //   );
@@ -411,66 +440,79 @@ const TrainingContextProvider = (props: PropsWithChildren) => {
             let processedLinks: string[] = [];
             let linksToProcess = [data.url];
 
-            let numLinksSentForProcessing = 0;
-            let didReachLimit = false;
-            // Even in the "unlimited" case, cap at 1_000_000 to prevent
-            // degenerate cases.
-            const _numWebsitePagesPerProjectAllowance =
-              numWebsitePagesPerProjectAllowance === 'unlimited'
-                ? 1_000_000
-                : numWebsitePagesPerProjectAllowance;
+            // let numLinksSentForProcessing = 0;
+            // let didReachLimit = false;
 
-            while (
-              linksToProcess.length > 0 &&
-              numLinksSentForProcessing < _numWebsitePagesPerProjectAllowance
-            ) {
-              let linksActuallySentToProcess = linksToProcess;
-              if (
-                numLinksSentForProcessing + linksActuallySentToProcess.length >
-                _numWebsitePagesPerProjectAllowance
-              ) {
-                didReachLimit = true;
-                linksActuallySentToProcess = linksToProcess.slice(
-                  0,
-                  _numWebsitePagesPerProjectAllowance -
-                    numLinksSentForProcessing,
+            while (linksToProcess.length > 0) {
+              try {
+                const processedContent = await generateEmbeddingsForUrls(
+                  linksToProcess,
                 );
-              }
-              const processedContent = await generateEmbeddingsForUrls(
-                linksActuallySentToProcess,
-              );
-              numLinksSentForProcessing += linksActuallySentToProcess.length;
+                // numLinksSentForProcessing += linksActuallySentToProcess.length;
 
-              const discoveredLinks = !processedContent
-                ? []
-                : uniq(
-                    processedContent.flatMap((html) =>
-                      extractLinksFromHtml(html),
-                    ),
-                  )
-                    .filter((href) => isHrefFromBaseUrl(baseUrl, href))
-                    .map((href) => {
-                      return completeHrefWithBaseUrl(baseUrl, href);
-                    })
-                    .filter(isPresent);
-              processedLinks = [
-                ...processedLinks,
-                ...linksActuallySentToProcess,
-              ];
-              linksToProcess = discoveredLinks.filter(
-                (link) => !processedLinks.includes(link),
-              );
+                const discoveredLinks = !processedContent
+                  ? []
+                  : uniq(
+                      processedContent.flatMap((html) =>
+                        extractLinksFromHtml(html),
+                      ),
+                    )
+                      .filter((href) => isHrefFromBaseUrl(baseUrl, href))
+                      .map((href) => {
+                        return completeHrefWithBaseUrl(baseUrl, href);
+                      })
+                      .filter(isPresent);
+                processedLinks = [...processedLinks, ...linksToProcess];
+                linksToProcess = discoveredLinks.filter(
+                  (link) => !processedLinks.includes(link),
+                );
+              } catch (e) {
+                break;
+              }
             }
-            if (didReachLimit) {
-              toast.error(
-                'You have reached the quota of pages per website on this plan.',
-              );
-            }
+
+            // if (
+            //   didReachLimit ||
+            //   numLinksSentForProcessing >= _numDocumentsPerProjectAllowance
+            // ) {
+            //   toast(
+            //     (t) => (
+            //       <div className="flex w-full flex-row items-center gap-4">
+            //         <p className="p-2">
+            //           You have reached the quota of indexed content on this
+            //           plan.
+            //         </p>
+            //         <button
+            //           className="whitespace-nowrap font-medium"
+            //           onClick={() => {
+            //             emitter.emit(EVENT_OPEN_PLAN_PICKER_DIALOG);
+            //             toast.dismiss(t.id);
+            //           }}
+            //           style={{
+            //             // The .toast class needs to use the "!important"
+            //             // flag, so we can only overwrite the text color
+            //             // using a style prop.
+            //             color: colors.sky['500'],
+            //           }}
+            //         >
+            //           Upgrade plan
+            //         </button>
+            //       </div>
+            //     ),
+            //     {
+            //       id: 'training-limit-reached',
+            //       duration: Infinity,
+            //       style: {
+            //         maxWidth: '400px',
+            //         width: '100%',
+            //       },
+            //     },
+            //   );
+            // }
             // }
           } catch (e) {
             onError(`Error processing website ${origin}: ${e}`);
           }
-
           break;
         }
         default: {
@@ -481,23 +523,19 @@ const TrainingContextProvider = (props: PropsWithChildren) => {
         }
       }
     },
-    [
-      config.exclude,
-      config.include,
-      generateEmbeddings,
-      numWebsitePagesPerProjectAllowance,
-    ],
+    [config.exclude, config.include, generateEmbeddings],
   );
 
   const trainAllSources = useCallback(
     async (onFileProcessed: () => void, onError: (message: string) => void) => {
       setState({ state: 'fetching_data' });
       for (const source of sources) {
-        await trainSource(source, onFileProcessed, onError);
+        await _trainSource(source, onFileProcessed, onError);
       }
       setState({ state: 'idle' });
+      await clientRefreshMaterializedViews(['mv_file_section_search_infos']);
     },
-    [sources, trainSource],
+    [sources, _trainSource],
   );
 
   const stopGeneratingEmbeddings = useCallback(() => {
@@ -513,7 +551,6 @@ const TrainingContextProvider = (props: PropsWithChildren) => {
         generateEmbeddings,
         stopGeneratingEmbeddings,
         trainAllSources,
-        trainSource,
       }}
       {...props}
     />

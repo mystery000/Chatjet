@@ -1,7 +1,10 @@
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { getFilesInTeam } from '@/lib/supabase';
+import {
+  getTeamUsageInfoByTeamOrProject,
+  getTokenAllowanceInfo,
+} from '@/lib/supabase';
 import { Database } from '@/types/supabase';
 import { FileStats, Team } from '@/types/types';
 
@@ -34,14 +37,12 @@ export default async function handler(
 
   const teamId = req.query.id as Team['id'];
 
-  const data = await getFilesInTeam(supabase, teamId);
-
-  if (!data) {
-    return res.status(400).json({ error: 'Unable to retrieve usage data' });
-  }
+  const tokenAllowanceInfo = await getTokenAllowanceInfo(supabase, {
+    teamId,
+  });
 
   if (req.method === 'GET') {
-    return res.status(200).json({ numFiles: data.length });
+    return res.status(200).json({ tokenCount: tokenAllowanceInfo.usedTokens });
   }
 
   return res.status(200).json({ status: 'ok' });

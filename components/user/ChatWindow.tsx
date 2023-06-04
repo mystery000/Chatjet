@@ -197,7 +197,7 @@ export const ContactWindow = ({
         <Dialog.Content className="animate-dialog-slide-in dialog-content max-h-[90%] w-[90%] max-w-[540px]">
           <Dialog.Title className="dialog-title">Contact us</Dialog.Title>
           <Dialog.Description className="dialog-description pb-4">
-            Share feedback, request a feature, report a bug, or contact sales.
+            Share feedback, request a feature, report a bug, or contact us.
           </Dialog.Description>
           <Formik
             initialValues={{
@@ -287,6 +287,21 @@ export const ContactWindow = ({
                     Send
                   </Button>
                 </CTABar>
+                <div className="flex flex-row items-center gap-4 border-t border-neutral-900 px-4 py-4">
+                  <p className="mb-1 flex-grow text-xs font-medium text-neutral-300">
+                    Want to skip the form and speak with an expert?
+                  </p>
+                  <Button
+                    className="flex-none"
+                    variant="cta"
+                    buttonSize="sm"
+                    type="submit"
+                    href="https://cal.com/markprompt/demo"
+                    target="_blank"
+                  >
+                    Book a demo
+                  </Button>
+                </div>
               </Form>
             )}
           </Formik>

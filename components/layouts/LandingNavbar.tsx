@@ -4,6 +4,7 @@ import Link from 'next/link';
 
 import { DiscordIcon } from '../icons/Discord';
 import { GitHubIcon } from '../icons/GitHub';
+import { MarkpromptIcon } from '../icons/Markprompt';
 import { ContactWindow } from '../user/ChatWindow';
 
 export default function LandingNavbar({
@@ -21,13 +22,10 @@ export default function LandingNavbar({
     >
       <Link href="/">
         <div className="flex flex-none flex-row items-center gap-4 text-white">
-          <img
-            src="/static/{chatjet.ai}.svg"
-            width={160}
-            height={40}
-            className="mx-auto text-white"
-            alt="chatjet.ai"
-          />
+          <MarkpromptIcon className="mx-auto h-10 w-10 text-white" />
+          <div className="hidden text-lg font-semibold transition hover:opacity-80 lg:block">
+            Markprompt
+          </div>
         </div>
       </Link>{' '}
       <div className="flex-grow" />
@@ -35,7 +33,7 @@ export default function LandingNavbar({
         className="hidden transform whitespace-nowrap text-sm font-medium text-white opacity-60 hover:opacity-100 sm:block"
         href="/resources/overview"
       >
-        Why Chatjet
+        Why Markprompt
       </Link>
       <Link
         className="hidden transform whitespace-nowrap text-sm font-medium text-white opacity-60 hover:opacity-100 md:block"
@@ -91,15 +89,15 @@ export default function LandingNavbar({
       )}
       <a
         className="hidden transform text-sm font-medium text-white opacity-60 hover:opacity-100 lg:block"
-        href="https://github.com/motifland/Chatjet"
-        aria-label="Chatjet on GitHub"
+        href="https://github.com/motifland/markprompt"
+        aria-label="Markprompt on GitHub"
       >
         <GitHubIcon className="h-5 w-5" />
       </a>
       <a
         className="hidden transform text-sm font-medium text-white opacity-60 hover:opacity-100 lg:block"
         href="https://discord.gg/MBMh4apz6X"
-        aria-label="Chatjet on Discord"
+        aria-label="Markprompt on Discord"
       >
         <DiscordIcon className="h-5 w-5" />
       </a>

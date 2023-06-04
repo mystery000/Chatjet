@@ -1,11 +1,11 @@
 import * as Accordion from '@radix-ui/react-accordion';
-import cn from 'classnames';
 import { Info } from 'lucide-react';
 import Link from 'next/link';
 import { ChangeEvent, FC, useMemo } from 'react';
 import { toast } from 'react-hot-toast';
 
 import { isDefaultCustomConfig, useConfigContext } from '@/lib/context/config';
+import emitter, { EVENT_OPEN_PLAN_PICKER_DIALOG } from '@/lib/events';
 import useTeam from '@/lib/hooks/use-team';
 import { canConfigureModel } from '@/lib/stripe/tiers';
 
@@ -13,7 +13,6 @@ import { ModelPicker } from './ModelPicker';
 import { Row } from './PlaygroundDashboard';
 import { TemplatePicker } from './TemplatePicker';
 import { UpgradeNote } from './UpgradeNote';
-import { UpgradeCTA } from '../team/PlanPicker';
 import { AccordionContent, AccordionTrigger } from '../ui/Accordion';
 import Button, { ButtonOrLinkWrapper } from '../ui/Button';
 import { SliderInput } from '../ui/SliderInput';
@@ -62,11 +61,14 @@ export const ModelConfigurator: FC<ModelConfiguratorProps> = () => {
           <div className="flex flex-row items-center gap-2">
             Prompt template
             {!_canConfigureModel && (
-              <UpgradeCTA showDialog>
-                <ButtonOrLinkWrapper className="mr-1 flex flex-none items-center rounded-full">
-                  <Tag color="fuchsia">Pro</Tag>
-                </ButtonOrLinkWrapper>
-              </UpgradeCTA>
+              <ButtonOrLinkWrapper
+                className="mr-1 flex flex-none items-center rounded-full"
+                onClick={() => {
+                  emitter.emit(EVENT_OPEN_PLAN_PICKER_DIALOG);
+                }}
+              >
+                <Tag color="fuchsia">Pro</Tag>
+              </ButtonOrLinkWrapper>
             )}
           </div>
         }

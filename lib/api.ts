@@ -1,4 +1,5 @@
 import { getResponseOrThrow, slugFromName } from '@/lib/utils';
+import { Database } from '@/types/supabase';
 import {
   DbFile,
   DbUser,
@@ -73,7 +74,7 @@ export const processFile = async (
   sourceId: Source['id'],
   fileData: FileData,
 ) => {
-  await fetch('/api/v1/openai/train-file', {
+  const res = await fetch('/api/v1/openai/train-file', {
     method: 'POST',
     body: JSON.stringify({
       file: fileData,
@@ -84,6 +85,7 @@ export const processFile = async (
       accept: 'application/json',
     },
   });
+  return getResponseOrThrow<void>(res);
 };
 
 export const deleteFiles = async (
@@ -284,6 +286,19 @@ export const cancelSubscription = (teamId: Team['id']) => {
   return fetch('/api/subscriptions/cancel', {
     method: 'POST',
     body: JSON.stringify({ teamId }),
+    headers: {
+      'Content-Type': 'application/json',
+      accept: 'application/json',
+    },
+  });
+};
+
+export const clientRefreshMaterializedViews = (
+  views: (keyof Database['public']['Views'])[],
+) => {
+  return fetch('/api/db/refresh-materialized-views', {
+    method: 'POST',
+    body: JSON.stringify({ views }),
     headers: {
       'Content-Type': 'application/json',
       accept: 'application/json',

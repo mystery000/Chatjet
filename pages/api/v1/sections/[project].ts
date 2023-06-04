@@ -44,11 +44,9 @@ export default async function handler(
   const pathname = req.url || '';
   const projectId = req.query.project as Project['id'];
 
-  const _isRequestFromMarkprompt = isRequestFromMarkprompt(req.headers.origin);
-
   if (!projectId) {
-    console.error(`[SECTIONS] [${pathname}] No project found`);
-    return res.status(400).json({ error: 'No project found' });
+    console.error(`[SECTIONS] [${pathname}] Project not found`);
+    return res.status(400).json({ error: 'Project not found' });
   }
 
   if (!prompt) {
@@ -62,14 +60,13 @@ export default async function handler(
     type: 'projectId',
   });
 
-  const ip = getRequesterIp(req);
-
   if (!rateLimitResult.result.success) {
+    const ip = getRequesterIp(req);
     console.error(`[SECTIONS] [RATE-LIMIT] [${projectId}] IP: ${ip}`);
     return res.status(429).json({ error: 'Too many requests' });
   }
 
-  if (!_isRequestFromMarkprompt) {
+  if (!isRequestFromMarkprompt(req.headers.origin)) {
     // Section queries are part of the Enterprise plans when used outside of
     // the Markprompt dashboard.
     const teamStripeInfo = await getTeamStripeInfo(supabaseAdmin, projectId);

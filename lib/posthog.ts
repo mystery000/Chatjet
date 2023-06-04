@@ -1,6 +1,10 @@
 import { PostHog } from 'posthog-node';
 
-type TrackingEventType = 'train' | 'generate completions' | 'get sections';
+type TrackingEventType =
+  | 'train'
+  | 'generate completions'
+  | 'get sections'
+  | 'search';
 
 const posthogNoopClient = {
   capture: () => {

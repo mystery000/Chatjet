@@ -22,12 +22,15 @@ import useProjects from '@/lib/hooks/use-projects';
 import useTeam from '@/lib/hooks/use-team';
 import useTeams from '@/lib/hooks/use-teams';
 import useUser from '@/lib/hooks/use-user';
+import { TIERS, Tier, getTeamTier } from '@/lib/stripe/tiers';
+import { TagColor } from '@/types/types';
 
 import Button from '../ui/Button';
 import { ErrorLabel } from '../ui/Forms';
 import { NoAutoInput } from '../ui/Input';
 import { CTABar } from '../ui/SettingsCard';
 import { Slash } from '../ui/Slash';
+import { Tag } from '../ui/Tag';
 
 const generateTeamName = (session: Session | null) => {
   if (session?.user) {
@@ -45,6 +48,19 @@ type TeamProjectPickerProps = {
   onNewTeamClick: () => void;
 };
 
+const getColorForTier = (tier: Tier): TagColor => {
+  switch (tier) {
+    case 'enterprise':
+      return 'fuchsia';
+    case 'pro':
+      return 'sky';
+    case 'starter':
+      return 'sky';
+    default:
+      return 'green';
+  }
+};
+
 const TeamPicker: FC<TeamProjectPickerProps> = ({ onNewTeamClick }) => {
   const { user } = useUser();
   const { teams, loading } = useTeams();
@@ -55,6 +71,8 @@ const TeamPicker: FC<TeamProjectPickerProps> = ({ onNewTeamClick }) => {
     return <></>;
   }
 
+  const tier = team && getTeamTier(team);
+
   return (
     <DropdownMenu.Root open={isOpen} onOpenChange={setOpen}>
       <DropdownMenu.Trigger asChild>
@@ -64,6 +82,9 @@ const TeamPicker: FC<TeamProjectPickerProps> = ({ onNewTeamClick }) => {
             aria-label="Select team"
           >
             {team?.name || ''}
+            {tier && (
+              <Tag color={getColorForTier(tier)}>{TIERS[tier].name}</Tag>
+            )}
             <ChevronsUpDown className="h-3 w-3" />
           </button>
         ) : (

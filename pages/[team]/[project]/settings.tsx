@@ -35,12 +35,13 @@ import {
   isProjectSlugAvailable,
   updateProject,
 } from '@/lib/api';
+import { DEFAULT_MARKPROMPT_CONFIG } from '@/lib/constants';
 import useDomains from '@/lib/hooks/use-domains';
 import useProject from '@/lib/hooks/use-project';
 import useProjects from '@/lib/hooks/use-projects';
 import useTeam from '@/lib/hooks/use-team';
 import useTokens from '@/lib/hooks/use-tokens';
-import { DEFAULT_MARKPROMPT_CONFIG, parse } from '@/lib/schema';
+import { parse } from '@/lib/schema';
 import {
   capitalize,
   copyToClipboard,

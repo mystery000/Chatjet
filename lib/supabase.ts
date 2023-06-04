@@ -14,13 +14,16 @@ import {
   WebsiteSourceDataType,
 } from '@/types/types';
 
+import { DEFAULT_MARKPROMPT_CONFIG } from './constants';
+import { MarkpromptConfig } from './schema';
+import { TokenAllowance, getNumTokensPerTeamAllowance } from './stripe/tiers';
 import { generateKey } from './utils';
 
 export const getBYOOpenAIKey = async (
   supabaseAdmin: SupabaseClient<Database>,
   projectId: Project['id'],
-) => {
-  const { data: openAIKeyData } = await supabaseAdmin
+): Promise<string | undefined> => {
+  const { data } = await supabaseAdmin
     .from('projects')
     .select('openai_key')
     .eq('id', projectId)
@@ -28,7 +31,34 @@ export const getBYOOpenAIKey = async (
     .select()
     .maybeSingle();
 
-  return openAIKeyData?.openai_key || undefined;
+  return data?.openai_key || undefined;
+};
+
+export const getProjectConfigData = async (
+  supabaseAdmin: SupabaseClient<Database>,
+  projectId: Project['id'],
+): Promise<{
+  byoOpenAIKey: string | undefined;
+  markpromptConfig: MarkpromptConfig;
+}> => {
+  const { data } = await supabaseAdmin
+    .from('projects')
+    .select('openai_key,markprompt_config')
+    .eq('id', projectId)
+    .limit(1)
+    .select()
+    .maybeSingle();
+
+  // We cannot use Ajv in edge runtimes, so use non-typesafe
+  // parsing and assume the format is correct. Cf.
+  // https://github.com/vercel/next.js/discussions/47063
+  const markpromptConfig = (data?.markprompt_config ||
+    JSON.parse(DEFAULT_MARKPROMPT_CONFIG)) as MarkpromptConfig;
+
+  return {
+    byoOpenAIKey: data?.openai_key || undefined,
+    markpromptConfig: markpromptConfig,
+  };
 };
 
 export const getTeamStripeInfo = async (
@@ -198,16 +228,90 @@ export const getProjectTeam = async (
   return undefined;
 };
 
-export const getFilesInTeam = async (
+export const getTeamUsageInfoByTeamOrProject = async (
   supabase: SupabaseClient<Database>,
-  teamId: Team['id'],
-) => {
-  // TODO: this query should be revised if/when we remove the project_id
-  // column from the files table.
-  const { data } = await supabase
-    .from('files')
-    .select('sources!inner (project_id), projects!inner (team_id)')
-    .eq('projects.team_id', teamId);
+  teamOrProjectId: { teamId?: Team['id']; projectId?: Project['id'] },
+): Promise<{
+  is_enterprise_plan: boolean;
+  stripe_price_id: string | null;
+  team_token_count: number;
+}> => {
+  // eslint-disable-next-line prefer-const
+  let { data, error } = await supabase
+    .from('v_team_project_usage_info')
+    .select('is_enterprise_plan,stripe_price_id,team_token_count')
+    .eq(
+      teamOrProjectId.teamId ? 'team_id' : 'project_id',
+      teamOrProjectId.teamId ?? teamOrProjectId.projectId,
+    )
+    .limit(1)
+    .maybeSingle();
 
-  return data;
+  // Important: data will be null in the above query if no content has been
+  // indexed. In that case, just fetch the team plan details.
+  if (!data || error) {
+    const {
+      data: teamProjectInfoData,
+    }: {
+      data: {
+        is_enterprise_plan: boolean | null;
+        stripe_price_id: string | null;
+        team_token_count: number | null;
+      } | null;
+    } = await supabase
+      .from('v_team_project_info')
+      .select('is_enterprise_plan,stripe_price_id')
+      .eq(
+        teamOrProjectId.teamId ? 'team_id' : 'project_id',
+        teamOrProjectId.teamId ?? teamOrProjectId.projectId,
+      )
+      .limit(1)
+      .maybeSingle();
+
+    data = teamProjectInfoData;
+  }
+
+  return {
+    is_enterprise_plan: !!data?.is_enterprise_plan,
+    stripe_price_id: data?.stripe_price_id || null,
+    team_token_count: data?.team_token_count || 0,
+  };
+};
+
+export const getTokenAllowanceInfo = async (
+  supabase: SupabaseClient<Database>,
+  teamOrProjectId: { teamId?: Team['id']; projectId?: Project['id'] },
+): Promise<{
+  numRemainingTokensOnPlan: number;
+  usedTokens: number;
+  tokenAllowance: TokenAllowance;
+}> => {
+  const teamUsageInfo = await getTeamUsageInfoByTeamOrProject(
+    supabase,
+    teamOrProjectId,
+  );
+  const usedTokens = teamUsageInfo?.team_token_count || 0;
+  const tokenAllowance = getNumTokensPerTeamAllowance(
+    !!teamUsageInfo?.is_enterprise_plan,
+    teamUsageInfo?.stripe_price_id,
+  );
+  const numRemainingTokensOnPlan =
+    tokenAllowance === 'unlimited'
+      ? 1_000_000_000
+      : Math.max(0, tokenAllowance - usedTokens);
+  return { numRemainingTokensOnPlan, usedTokens, tokenAllowance };
+};
+
+export const refreshMaterializedViews = async (
+  supabaseAdmin: SupabaseClient<Database>,
+  views: (keyof Database['public']['Views'])[],
+) => {
+  // TODO
+  console.log('No implemented yet');
+  // for (const viewName of views) {
+  //   const { error } = await supabaseAdmin.rpc('refresh_materialized_view', {
+  //     view_name: viewName,
+  //   });
+  //   console.error(error);
+  // }
 };

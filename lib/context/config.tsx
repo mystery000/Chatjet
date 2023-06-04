@@ -30,6 +30,7 @@ export type State = {
   referencesHeading: string;
   loadingHeading: string;
   includeBranding: boolean;
+  isInstantSearchEnabled: boolean;
   modelConfig: ModelConfig;
   setColor: (colorKey: ThemeColorKeys, value: string) => void;
   setTheme: (theme: Theme) => void;
@@ -40,6 +41,7 @@ export type State = {
   setReferencesHeading: (referencesHeading: string) => void;
   setLoadingHeading: (loadingHeading: string) => void;
   setIncludeBranding: (includeBranding: boolean) => void;
+  setInstantSearchEnabled: (isInstantSearchEnabled: boolean) => void;
   setModelConfig: (modelConfig: ModelConfig) => void;
   resetModelConfigDefaults: () => void;
 };
@@ -65,6 +67,7 @@ const initialState: State = {
   referencesHeading: '',
   loadingHeading: '',
   includeBranding: true,
+  isInstantSearchEnabled: false,
   modelConfig: DEFAULT_MODEL_CONFIG,
   setColor: () => {},
   setTheme: () => {},
@@ -75,6 +78,7 @@ const initialState: State = {
   setReferencesHeading: () => {},
   setLoadingHeading: () => {},
   setIncludeBranding: () => {},
+  setInstantSearchEnabled: () => {},
   setModelConfig: () => {},
   resetModelConfigDefaults: () => {},
 };
@@ -93,6 +97,7 @@ export const CONFIG_DEFAULT_VALUES = {
   referencesHeading: 'Answer generated from the following pages:',
   loadingHeading: 'Fetching relevant pages…',
   includeBranding: true,
+  isInstantSearchEnabled: false,
   isDark: false,
 };
 
@@ -133,6 +138,12 @@ const ConfigContextProvider = (props: PropsWithChildren) => {
     `${project?.id ?? 'undefined'}:config:include-branding`,
     CONFIG_DEFAULT_VALUES.includeBranding,
   );
+
+  const [isInstantSearchEnabled, setInstantSearchEnabled] =
+    useLocalStorage<boolean>(
+      `${project?.id ?? 'undefined'}:config:instant-search-enabled`,
+      CONFIG_DEFAULT_VALUES.isInstantSearchEnabled,
+    );
 
   const [modelConfig, setModelConfig] = useLocalStorage<ModelConfig>(
     `${project?.id ?? 'undefined'}:config:model-config`,
@@ -194,6 +205,7 @@ const ConfigContextProvider = (props: PropsWithChildren) => {
         referencesHeading,
         loadingHeading,
         includeBranding,
+        isInstantSearchEnabled,
         modelConfig,
         colors: isDark ? theme.colors.dark : theme.colors.light,
         setTheme: updateOrCreateCustomTheme,
@@ -205,6 +217,7 @@ const ConfigContextProvider = (props: PropsWithChildren) => {
         setReferencesHeading,
         setLoadingHeading,
         setIncludeBranding,
+        setInstantSearchEnabled,
         setModelConfig,
         resetModelConfigDefaults,
       }}

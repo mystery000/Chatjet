@@ -126,8 +126,8 @@ function Component() {
           </Markprompt.AutoScroller>
 
           <References
-            loadingText={${loadingHeading}}
-            referencesText={${referencesHeading}}
+            loadingText="${loadingHeading}"
+            referencesText="${referencesHeading}"
           />
 
           <Markprompt.Close className="MarkpromptClose">

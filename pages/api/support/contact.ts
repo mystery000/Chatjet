@@ -49,7 +49,7 @@ export default async function handler(
       from: process.env.NEXT_PUBLIC_SUPPORT_EMAIL!,
       to: process.env.NEXT_PUBLIC_SUPPORT_EMAIL!,
       reply_to: email,
-      subject: 'Contact request',
+      subject: `Contact request from ${email}`,
       text: message,
     });
 

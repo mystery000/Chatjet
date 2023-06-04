@@ -81,14 +81,16 @@ export default function App({ Component, pageProps }: CustomAppProps) {
                 <ManagedTrainingContext>
                   <ManagedConfigContext>
                     <Component {...pageProps}></Component>
-                    <PromptOutsideOnboarding />
+                    {!(Component as any).hideChat && (
+                      <PromptOutsideOnboarding />
+                    )}
+                    <Toaster />
                   </ManagedConfigContext>
                 </ManagedTrainingContext>
               </ManagedAppContext>
             </ManagedPlainProvider>
           </SessionContextProvider>
         </ThemeProvider>
-        <Toaster />
         <Analytics />
       </SWRConfig>
     </>

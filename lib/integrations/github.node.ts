@@ -102,7 +102,7 @@ export const getRepositoryMDFilesInfo = async (
       if (
         f.url &&
         f.path &&
-        shouldIncludeFileWithPath(f.path, includeGlobs, excludeGlobs)
+        shouldIncludeFileWithPath(f.path, includeGlobs, excludeGlobs, false)
       ) {
         let path = f.path;
         if (!path.startsWith('/')) {

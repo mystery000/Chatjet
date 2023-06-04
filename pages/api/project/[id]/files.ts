@@ -51,6 +51,9 @@ export default async function handler(
       return res.status(404).json({ error: 'No files found' });
     }
 
+    // Matierialized views turn columns into `col_type | null` types
+    // instead of the actual `col_type` type, so we type cast here
+    // to stay with the actual types.
     return res.status(200).json(files);
   } else if (req.method === 'DELETE') {
     const ids = req.body;

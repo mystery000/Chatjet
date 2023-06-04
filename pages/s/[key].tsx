@@ -72,10 +72,9 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   };
 };
 
-const SharePage: FC<InferGetStaticPropsType<typeof getStaticProps>> = ({
-  projectKey,
-  promptConfig,
-}) => {
+const SharePage: FC<InferGetStaticPropsType<typeof getStaticProps>> & {
+  hideChat: boolean;
+} = ({ projectKey, promptConfig }) => {
   const [isDark, setDark] = useLocalStorage<boolean>(
     `public:share:isDark`,
     true,
@@ -131,5 +130,7 @@ const SharePage: FC<InferGetStaticPropsType<typeof getStaticProps>> = ({
     </>
   );
 };
+
+SharePage.hideChat = true;
 
 export default SharePage;

@@ -12,18 +12,22 @@ import useFiles from '@/lib/hooks/use-files';
 import useProject from '@/lib/hooks/use-project';
 import useSources from '@/lib/hooks/use-sources';
 import { getOrCreateSource } from '@/lib/supabase';
-import { readTextFileAsync } from '@/lib/utils';
+import { SUPPORTED_EXTENSIONS, readTextFileAsync } from '@/lib/utils';
 import { FileData } from '@/types/types';
 
 import Button from '../ui/Button';
 import { ToggleMessage } from '../ui/ToggleMessage';
 
 type FileDndProps = {
+  isOnEmptyStateDataPanel?: boolean;
   onTrainingComplete: () => void;
   className?: string;
 };
 
-export const FileDnd: FC<FileDndProps> = ({ onTrainingComplete }) => {
+export const FileDnd: FC<FileDndProps> = ({
+  isOnEmptyStateDataPanel,
+  onTrainingComplete,
+}) => {
   const supabase = useSupabaseClient();
   const [pickedFiles, setPickedFiles] = useState<FileData[]>([]);
   const [trainingComplete, setTrainingComplete] = useState(false);
@@ -141,7 +145,7 @@ export const FileDnd: FC<FileDndProps> = ({ onTrainingComplete }) => {
         <input {...getInputProps()} />
         <div className="flex h-full w-full flex-row items-center justify-center gap-2">
           <div className="relative mt-4 w-full">
-            <div className="absolute inset-x-0 -top-9">
+            <div className="absolute inset-x-0 top-[-60px]">
               <ToggleMessage
                 showMessage1={!hasFiles}
                 message1={
@@ -149,18 +153,29 @@ export const FileDnd: FC<FileDndProps> = ({ onTrainingComplete }) => {
                     {trainingComplete ? (
                       'Processing complete'
                     ) : (
-                      <>Drop your files here</>
+                      <>
+                        Drop your files here
+                        {isOnEmptyStateDataPanel ? ', or connect a source' : ''}
+                      </>
                     )}
-                    <span
+                    <p
                       className={cn(
-                        'block text-center text-xs text-neutral-600',
+                        'mt-1 text-center text-xs text-neutral-500',
                         {
                           'opacity-0': trainingComplete,
                         },
                       )}
                     >
-                      A folder also works.
-                    </span>
+                      A folder also works. Max file size: 1 MB.
+                    </p>
+                    <p
+                      className={cn('text-center text-xs text-neutral-500', {
+                        'opacity-0': trainingComplete,
+                      })}
+                    >
+                      Supported file extensions:{' '}
+                      {SUPPORTED_EXTENSIONS.join(', ')}.
+                    </p>
                   </>
                 }
                 message2={getTrainingStateMessage(

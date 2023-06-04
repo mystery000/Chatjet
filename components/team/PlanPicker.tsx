@@ -17,6 +17,10 @@ import Button from '@/components/ui/Button';
 import { ListItem } from '@/components/ui/ListItem';
 import { Segment } from '@/components/ui/Segment';
 import { cancelSubscription } from '@/lib/api';
+import emitter, {
+  EVENT_OPEN_CONTACT,
+  EVENT_OPEN_PLAN_PICKER_DIALOG,
+} from '@/lib/events';
 import useTeam from '@/lib/hooks/use-team';
 import { getStripe } from '@/lib/stripe/client';
 import {
@@ -40,6 +44,7 @@ const PricingCard = ({
   customPrice,
   cta,
   ctaHref,
+  onCtaClick,
 }: {
   tier: Tier;
   model: PricedModel;
@@ -49,6 +54,7 @@ const PricingCard = ({
   customPrice?: string;
   cta?: string;
   ctaHref?: string;
+  onCtaClick?: () => void;
 }) => {
   const router = useRouter();
   const { team, mutate: mutateTeam } = useTeam();
@@ -113,13 +119,15 @@ const PricingCard = ({
     } else if (comp === -1) {
       buttonLabel = 'Downgrade';
     }
+  } else if (isOnEnterprisePlan && tier !== 'enterprise') {
+    buttonLabel = 'Downgrade';
   }
 
   let isHighlighted = false;
-  if (isPro && !currentPriceId) {
+  if (isPro && !currentPriceId && !isOnEnterprisePlan) {
     // If we are on a free plan, highlight Standard
     isHighlighted = true;
-  } else if (isPro && !isFree) {
+  } else if (isPro && !isFree && !isOnEnterprisePlan) {
     // If this is the current plan, and it's not Free, highlight
     isHighlighted = true;
   } else if (
@@ -130,12 +138,14 @@ const PricingCard = ({
     // If card priceId and currentPriceId are of the same tier,
     // keep highlighted (e.g. when sliding quota range).
     isHighlighted = true;
+  } else if (tier === 'enterprise' && isOnEnterprisePlan) {
+    isHighlighted = true;
   }
 
   return (
     <div
       className={cn(
-        'flex w-full flex-col gap-4 rounded-lg border px-8 pb-8 pt-12',
+        'flex w-full flex-col gap-4 rounded-lg border px-6 pb-8 pt-12',
         {
           'border-neutral-900 bg-neutral-1000/50': isHighlighted,
           'border-transparent': !isHighlighted,
@@ -152,26 +162,28 @@ const PricingCard = ({
       >
         Current plan
       </p>
-      <div className="flex flex-col items-center gap-2 lg:flex-row">
+      <div className="flex flex-col items-start gap-4">
         <h2 className="flex-none flex-grow truncate text-xl font-semibold text-neutral-300">
           {tierDetails.name}
         </h2>
-        {hasMonthlyOption && typeof showAnnual !== 'undefined' && (
-          <div className="flex-none">
-            <Segment
-              size="sm"
-              items={['Monthly', 'Annually']}
-              selected={showAnnual ? 1 : 0}
-              id="billing-period"
-              onChange={(i) => setShowAnnual(i === 1)}
-            />
-          </div>
-        )}
-        {!hasMonthlyOption && !isFree && (
-          <p className="flex-none rounded-md bg-neutral-900 px-2 py-0.5 text-xs font-medium text-neutral-300">
-            Billed annually
-          </p>
-        )}
+        <div className="h-12">
+          {hasMonthlyOption && typeof showAnnual !== 'undefined' && (
+            <div className="flex-none">
+              <Segment
+                size="sm"
+                items={['Monthly', 'Annually']}
+                selected={showAnnual ? 1 : 0}
+                id="billing-period"
+                onChange={(i) => setShowAnnual(i === 1)}
+              />
+            </div>
+          )}
+          {!hasMonthlyOption && !isFree && (
+            <p className="flex-none rounded-md bg-neutral-900 px-2 py-0.5 text-xs font-medium text-neutral-300">
+              Billed annually
+            </p>
+          )}
+        </div>
       </div>
       <div className="flex h-16 w-full">
         {tierDetails.prices && (
@@ -256,7 +268,11 @@ const PricingCard = ({
           variant="plain"
           href={ctaHref}
           onClick={async () => {
-            if (!team || ctaHref) {
+            if (!team) {
+              return;
+            }
+            if (onCtaClick) {
+              onCtaClick();
               return;
             }
             try {
@@ -312,49 +328,6 @@ const PricingCard = ({
   );
 };
 
-type PlanPickerDialogProps = {
-  children: ReactNode;
-};
-
-export const PlanPickerDialog: FC<PlanPickerDialogProps> = ({ children }) => {
-  const [isDialogOpen, setDialogOpen] = useState(false);
-  return (
-    <Dialog.Root open={isDialogOpen} onOpenChange={setDialogOpen}>
-      <Dialog.Trigger asChild>{children}</Dialog.Trigger>
-      <Dialog.Portal>
-        <Dialog.Overlay className="animate-overlay-appear dialog-overlay" />
-        <Dialog.Content className="animate-dialog-slide-in dialog-content max-h-[90%] w-[90%] max-w-[900px] overflow-y-auto py-8 px-12">
-          <h1 className="mb-8 text-center text-xl font-bold">Choose plan</h1>
-          <PlanPicker />
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
-  );
-};
-
-type UpgradeCTAProps = {
-  showDialog?: boolean;
-  children: ReactNode;
-};
-
-export const UpgradeCTA: FC<UpgradeCTAProps> = ({ showDialog, children }) => {
-  const { team } = useTeam();
-
-  if (showDialog) {
-    return <PlanPickerDialog>{children}</PlanPickerDialog>;
-  } else {
-    const buttonWithProps = Children.map(children, (child) => {
-      if (isValidElement(child)) {
-        return cloneElement(child, {
-          href: `/settings/${team?.slug}/plans`,
-        } as any);
-      }
-      return child;
-    });
-    return <>{buttonWithProps}</>;
-  }
-};
-
 const PlanPicker = () => {
   const { team } = useTeam();
   const [model, setModel] = useState<PricedModel>('gpt-3.5-turbo');
@@ -375,13 +348,19 @@ const PlanPicker = () => {
 
   return (
     <>
-      <div className="-ml-8 grid w-[calc(100%+64px)] grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="-ml-8 grid w-[calc(100%+64px)] grid-cols-1 gap-4 sm:grid-cols-4">
         <PricingCard
           tier="hobby"
           model={model}
           currentPriceId={team?.stripe_price_id || undefined}
           isOnEnterprisePlan={!!team?.is_enterprise_plan}
           customPrice="Free"
+        />
+        <PricingCard
+          tier="starter"
+          model={model}
+          currentPriceId={team?.stripe_price_id || undefined}
+          isOnEnterprisePlan={!!team?.is_enterprise_plan}
         />
         <PricingCard
           tier="pro"
@@ -397,7 +376,9 @@ const PlanPicker = () => {
           isOnEnterprisePlan={!!team?.is_enterprise_plan}
           customPrice="Custom"
           cta="Contact Sales"
-          ctaHref={`mailto:${process.env.NEXT_PUBLIC_SALES_EMAIL!}`}
+          onCtaClick={() => {
+            emitter.emit(EVENT_OPEN_CONTACT);
+          }}
         />
       </div>
     </>

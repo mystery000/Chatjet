@@ -1,7 +1,6 @@
 import * as Slider from '@radix-ui/react-slider';
 import { Application } from '@splinetool/runtime';
 import cn from 'classnames';
-import Image from 'next/image';
 import Link from 'next/link';
 import { FC, useEffect, useState } from 'react';
 import Balancer from 'react-wrap-balancer';
@@ -9,6 +8,7 @@ import Balancer from 'react-wrap-balancer';
 import { AngeListIcon } from '@/components/icons/AngelList';
 import { CalIcon } from '@/components/icons/Cal';
 import { GitHubIcon } from '@/components/icons/GitHub';
+import { MarkpromptIcon } from '@/components/icons/Markprompt';
 import { MotifIcon } from '@/components/icons/Motif';
 import { ReploIcon } from '@/components/icons/Replo';
 import { TwitterIcon } from '@/components/icons/Twitter';
@@ -16,6 +16,7 @@ import LandingNavbar from '@/components/layouts/LandingNavbar';
 import { Blurs } from '@/components/ui/Blurs';
 import Button from '@/components/ui/Button';
 import { Pattern } from '@/components/ui/Pattern';
+import emitter, { EVENT_OPEN_CONTACT } from '@/lib/events';
 import { PricedModel, TierDetails, TIERS } from '@/lib/stripe/tiers';
 
 import StepsSection from './sections/Steps';
@@ -33,6 +34,7 @@ const PricingCard = ({
   highlight,
   cta,
   ctaHref,
+  onCtaClick,
   customPrice,
 }: {
   tier: TierDetails;
@@ -40,6 +42,7 @@ const PricingCard = ({
   highlight?: boolean;
   cta: string;
   ctaHref?: string;
+  onCtaClick?: () => void;
   customPrice?: string;
 }) => {
   const [priceStep, setPriceStep] = useState(0);
@@ -170,7 +173,10 @@ const PricingCard = ({
         <Button
           className="w-full"
           variant={highlight ? 'fuchsia' : 'plain'}
-          href={ctaHref ?? '/signup'}
+          href={ctaHref ?? (!onCtaClick ? '/signup' : undefined)}
+          onClick={() => {
+            onCtaClick?.();
+          }}
         >
           {cta}
         </Button>
@@ -203,7 +209,7 @@ const LandingPage: FC<LandingPageProps> = ({ stars }) => {
 
   return (
     <>
-      <SharedHead title="Chatjet.ai | Custom AI chatbots for your website and docs" />
+      <SharedHead title="Markprompt | Enterprise-grade ChatGPT for your website and docs" />
       {/* <div className="z-40 bg-fuchsia-700 py-1.5 px-6 sm:px-8">
         <Link
           href="/blog/markprompt-qa"
@@ -226,7 +232,7 @@ const LandingPage: FC<LandingPageProps> = ({ stars }) => {
               </Link>
               <h1 className="gradient-heading mt-6 text-left text-4xl leading-[36px] tracking-[-0.6px] sm:mr-[-50px] sm:text-6xl sm:leading-[64px]">
                 <Balancer>
-                  Build,Train and Deploy Custom GPT chatbots
+                  Enterprise-grade ChatGPT for your website and docs
                 </Balancer>
               </h1>
               <p className="z-20 mt-8 mr-[40px] max-w-screen-md text-left text-base text-neutral-500 sm:mt-4 sm:text-lg">
@@ -234,21 +240,22 @@ const LandingPage: FC<LandingPageProps> = ({ stars }) => {
                   Connect any source of content, from public websites to private
                   GitHub repos, configure the design and tone, and paste the
                   code to your website. In minutes, you have a chatbot that
-                  answers all your customers&apos; questions. 
+                  answers all your customers&apos; questions. If not, you will
+                  get notified and can take action.
                 </Balancer>
               </p>
               <div className="flex flex-col items-start justify-start gap-4 pt-8 sm:flex-row sm:items-center">
                 <Button variant="cta" buttonSize="lg" href="/signup">
-                  Build Your Chatbot Now
+                  Start for free
                 </Button>
                 <div className="hidden sm:block">
                   <Button
                     variant="plain"
                     buttonSize="lg"
-                    href="https://twitter.com/ChatjetAi"
-                    Icon={TwitterIcon}
+                    href="https://github.com/motifland/markprompt"
+                    Icon={GitHubIcon}
                   >
-                    Follow us on Twitter
+                    Star on GitHub
                     <span className="ml-2 text-neutral-600">
                       {formatNumStars(stars)}
                     </span>
@@ -287,7 +294,7 @@ const LandingPage: FC<LandingPageProps> = ({ stars }) => {
         </h2>
         <p className="mx-auto mt-4 max-w-screen-sm text-center text-lg text-neutral-500">
           Your users will be asking lots of questions, and will be expecting
-          quality answers. Use Chatjet&apos;s feedback and analytics features
+          quality answers. Use Markprompt&apos;s feedback and analytics features
           to pinpoint shortcomings in your content, and improve your content.
         </p>
         <div className="relative mt-20 h-[600px] w-full overflow-hidden rounded-lg border border-neutral-900">
@@ -297,13 +304,8 @@ const LandingPage: FC<LandingPageProps> = ({ stars }) => {
             </p>
           </div>
           <div className="sticky inset-x-0 top-0 z-10 flex h-12 flex-none flex-row items-center gap-4 border-b border-neutral-900 px-4 py-2">
-            <Image
-              src="/static/{chatjet.ai}.svg"
-              width={96}
-              height={24}
-              className="mx-auto text-white"
-              alt="chatjet.ai"
-            />
+            <MarkpromptIcon className="ml-1 h-6 w-6 text-neutral-300" />
+            <p className="text-sm text-neutral-500">Acme Inc</p>
           </div>
           <div className="absolute inset-x-0 top-12 bottom-0 z-0 grid w-full flex-grow grid-cols-4">
             <div className="hidden h-full flex-col gap-1 border-r border-neutral-900 px-3 py-3 text-sm text-neutral-500 sm:flex">
@@ -372,7 +374,9 @@ const LandingPage: FC<LandingPageProps> = ({ stars }) => {
             <PricingCard
               tier={TIERS.enterprise}
               cta="Contact Sales"
-              ctaHref={`mailto:${process.env.NEXT_PUBLIC_SALES_EMAIL!}`}
+              onCtaClick={() => {
+                emitter.emit(EVENT_OPEN_CONTACT);
+              }}
               model={model}
               customPrice="Custom"
             />
@@ -380,19 +384,19 @@ const LandingPage: FC<LandingPageProps> = ({ stars }) => {
         </div>
         <div className="flex flex-col items-center">
           <h2 className="gradient-heading mt-40 text-center text-4xl">
-            Get Started
+            Open source
           </h2>
           <p className="mx-auto mt-4 max-w-md text-center text-lg text-neutral-500">
             <Balancer>
-              Get started today for FREE, for you to build, run, and
-              test to if you like!
+              The source code is on GitHub, for you to review, run, and
+              contribute to if you like!
             </Balancer>
           </p>
           <div className="mt-12">
             <Button
               variant="plain"
               buttonSize="lg"
-              href="https://github.com/chatjet-ai/chatjet-ai"
+              href="https://github.com/motifland/markprompt"
               Icon={GitHubIcon}
             >
               Star on GitHub
@@ -411,7 +415,7 @@ const LandingPage: FC<LandingPageProps> = ({ stars }) => {
               className="border-b border-dotted border-neutral-700 text-neutral-300"
               href="https://motif.land"
             >
-              Chatjet.ai
+              Motif
             </a>{' '}
             team
           </div>

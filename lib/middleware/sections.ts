@@ -9,10 +9,7 @@ import {
   noProjectForTokenResponse,
   noTokenResponse,
 } from './common';
-import {
-  checkCompletionsRateLimits,
-  checkSectionsRateLimits,
-} from '../rate-limits';
+import { checkSectionsRateLimits } from '../rate-limits';
 import { getAuthorizationToken, truncateMiddle } from '../utils';
 
 // Admin access to Supabase, bypassing RLS.

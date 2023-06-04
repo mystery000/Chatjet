@@ -42,6 +42,7 @@ const extractFromZip = async (
         pathWithoutRepoId,
         includeGlobs,
         excludeGlobs,
+        false,
       );
     });
 

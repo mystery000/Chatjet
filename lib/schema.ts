@@ -1,21 +1,34 @@
 import Ajv, { JTDSchemaType } from 'ajv/dist/jtd';
 
-export type MarkpromptConfigType = {
+export type MarkpromptConfig = {
   include?: string[];
   exclude?: string[];
+  processorOptions?: {
+    linkRewrite?: {
+      pattern: string;
+      replace: string;
+      excludeExternalLinks?: boolean;
+    };
+  };
 };
 
-export const DEFAULT_MARKPROMPT_CONFIG = `{
-  "include": [
-    "**/*"
-  ],
-  "exclude": []
-}`;
-
-export const MARKPROMPT_CONFIG_SCHEMA: JTDSchemaType<MarkpromptConfigType> = {
+export const MARKPROMPT_CONFIG_SCHEMA: JTDSchemaType<MarkpromptConfig> = {
   optionalProperties: {
     include: { elements: { type: 'string' } },
     exclude: { elements: { type: 'string' } },
+    processorOptions: {
+      optionalProperties: {
+        linkRewrite: {
+          properties: {
+            pattern: { type: 'string' },
+            replace: { type: 'string' },
+          },
+          optionalProperties: {
+            excludeExternalLinks: { type: 'boolean' },
+          },
+        },
+      },
+    },
   },
 };
 

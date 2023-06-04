@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { FC } from 'react';
 
 import { TrainingState, getTrainingStateMessage } from '@/lib/context/training';
-import { pluralize, truncate } from '@/lib/utils';
+import { pluralize } from '@/lib/utils';
 
 const getStatusMessage = (
   trainingState: TrainingState,

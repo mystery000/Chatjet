@@ -13,7 +13,7 @@ import { track } from '@/lib/posthog';
 import { DEFAULT_PROMPT_TEMPLATE } from '@/lib/prompt';
 import { checkCompletionsRateLimits } from '@/lib/rate-limits';
 import { FileSection, getMatchingSections, storePrompt } from '@/lib/sections';
-import { getBYOOpenAIKey, getTeamStripeInfo } from '@/lib/supabase';
+import { getProjectConfigData, getTeamStripeInfo } from '@/lib/supabase';
 import { recordProjectTokenCount } from '@/lib/tinybird';
 import { stringToLLMInfo } from '@/lib/utils';
 import { isRequestFromMarkprompt, safeParseInt } from '@/lib/utils.edge';
@@ -137,10 +137,6 @@ export default async function handler(req: NextRequest) {
 
   const { pathname, searchParams } = new URL(req.url);
 
-  const _isRequestFromMarkprompt = isRequestFromMarkprompt(
-    req.headers.get('origin'),
-  );
-
   const lastPathComponent = pathname.split('/').slice(-1)[0];
   let projectIdParam = undefined;
   // TODO: need to investigate the difference between a request
@@ -153,8 +149,8 @@ export default async function handler(req: NextRequest) {
   }
 
   if (!projectIdParam) {
-    console.error(`[COMPLETIONS] [${pathname}] No project found`);
-    return new Response('No project found', { status: 400 });
+    console.error(`[COMPLETIONS] [${pathname}] Project not found`);
+    return new Response('Project not found', { status: 400 });
   }
 
   if (!prompt) {
@@ -175,7 +171,7 @@ export default async function handler(req: NextRequest) {
     return new Response('Too many requests', { status: 429 });
   }
 
-  if (!_isRequestFromMarkprompt) {
+  if (!isRequestFromMarkprompt(req.headers.get('origin'))) {
     // Custom model configurations are part of the Pro and Enterprise plans
     // when used outside of the Markprompt dashboard.
     const teamStripeInfo = await getTeamStripeInfo(supabaseAdmin, projectId);
@@ -195,7 +191,7 @@ export default async function handler(req: NextRequest) {
     }
   }
 
-  const byoOpenAIKey = await getBYOOpenAIKey(supabaseAdmin, projectId);
+  const { byoOpenAIKey } = await getProjectConfigData(supabaseAdmin, projectId);
 
   const sanitizedQuery = prompt.trim().replaceAll('\n', ' ');
 
@@ -233,6 +229,10 @@ export default async function handler(req: NextRequest) {
   //   });
   // }
 
+  const _prepareSectionText = (text: string) => {
+    return text.replace(/\n/g, ' ').trim();
+  };
+
   let numTokens = 0;
   let contextText = '';
   const references: DbFile['path'][] = [];
@@ -243,9 +243,9 @@ export default async function handler(req: NextRequest) {
       break;
     }
 
-    contextText += `Section id: ${
-      section.path
-    }\n\n${section.content.trim()}\n---\n`;
+    contextText += `Section id: ${section.path}\n\n${_prepareSectionText(
+      section.content,
+    )}\n---\n`;
     if (!references.includes(section.path)) {
       references.push(section.path);
     }

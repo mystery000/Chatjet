@@ -1,6 +1,5 @@
 import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 import cn from 'classnames';
-import Image from 'next/image';
 import Link from 'next/link';
 import { FC } from 'react';
 
@@ -8,6 +7,7 @@ import { useAppContext } from '@/lib/context/app';
 import useOnboarding from '@/lib/hooks/use-onboarding';
 import useUser from '@/lib/hooks/use-user';
 
+import { MarkpromptIcon } from '../icons/Markprompt';
 import TeamProjectPicker from '../team/TeamProjectPicker';
 import Button from '../ui/Button';
 import { ContactWindow } from '../user/ChatWindow';
@@ -31,13 +31,7 @@ export const AppNavbar: FC<AppNavbarProps> = ({ animated }) => {
     >
       <div className="flex-none">
         <Link href="/" className="outline-none">
-          <Image
-            src="/static/{chatjet.ai}.svg"
-            width={128}
-            height={32}
-            className="mx-auto text-white"
-            alt="chatjet.ai"
-          />
+          <MarkpromptIcon className="mx-auto h-8 w-8 text-white" />
         </Link>
       </div>
       {!!user?.has_completed_onboarding && !loadingUser && (

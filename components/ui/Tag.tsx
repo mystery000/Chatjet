@@ -1,9 +1,11 @@
 import classNames from 'classnames';
 import { FC, ReactNode } from 'react';
 
+import { TagColor } from '@/types/types';
+
 type TagProps = {
   className?: string;
-  color?: 'fuchsia' | 'orange' | 'sky' | 'green';
+  color?: TagColor;
   size?: 'xs' | 'sm' | 'base';
   rounded?: boolean;
   children: ReactNode;

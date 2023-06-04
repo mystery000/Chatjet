@@ -7,12 +7,17 @@ import {
   checkEmbeddingsRateLimits,
   getEmbeddingsRateLimitResponse,
 } from '@/lib/rate-limits';
-import { getBYOOpenAIKey, getProjectIdFromSource } from '@/lib/supabase';
+import { getProjectConfigData, getProjectIdFromSource } from '@/lib/supabase';
 import { Database } from '@/types/supabase';
-import { FileData, Source } from '@/types/types';
+import {
+  API_ERROR_ID_CONTENT_TOKEN_QUOTA_EXCEEDED,
+  FileData,
+  Source,
+} from '@/types/types';
 
 type Data = {
   status?: string;
+  name?: string;
   error?: string;
   errors?: { path: string; message: string }[];
 };
@@ -71,7 +76,10 @@ export default async function handler(
     });
   }
 
-  const byoOpenAIKey = await getBYOOpenAIKey(supabaseAdmin, projectId);
+  const { byoOpenAIKey, markpromptConfig } = await getProjectConfigData(
+    supabaseAdmin,
+    projectId,
+  );
 
   const errors = await generateFileEmbeddings(
     supabaseAdmin,
@@ -79,7 +87,24 @@ export default async function handler(
     sourceId,
     file,
     byoOpenAIKey,
+    markpromptConfig,
   );
+
+  if (errors) {
+    console.error('Errors in trainfile', JSON.stringify(errors, null, 2));
+  }
+
+  const quotaExceededError = errors.find(
+    (e) => e.id === API_ERROR_ID_CONTENT_TOKEN_QUOTA_EXCEEDED,
+  );
+
+  if (quotaExceededError) {
+    // In case of a quota exceeded error, return an actual error code.
+    return res.status(403).json({
+      name: API_ERROR_ID_CONTENT_TOKEN_QUOTA_EXCEEDED,
+      error: quotaExceededError.message,
+    });
+  }
 
   return res.status(200).json({ status: 'ok', errors });
 }

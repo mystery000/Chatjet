@@ -9,7 +9,7 @@ export type ProjectUsageHistogram = {
   histogram: DateCountHistogramEntry[];
 };
 export type FileStats = {
-  numFiles: number;
+  tokenCount: number;
 };
 
 export type OAuthProvider = 'github';
@@ -140,6 +140,10 @@ export type RobotsTxtInfo = { sitemap?: string; disallowedPaths: string[] };
 
 export type ReferenceInfo = { name: string; href?: string };
 
+export const API_ERROR_CODE_CONTENT_TOKEN_QUOTA_EXCEEDED = 1000;
+export const API_ERROR_ID_CONTENT_TOKEN_QUOTA_EXCEEDED =
+  'content_quota_exceeded';
+
 export class ApiError extends Error {
   readonly code: number;
 
@@ -148,3 +152,5 @@ export class ApiError extends Error {
     this.code = code;
   }
 }
+
+export type TagColor = 'fuchsia' | 'orange' | 'sky' | 'green';

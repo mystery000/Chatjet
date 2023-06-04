@@ -72,7 +72,12 @@ export const extractFileDataEntriesFromZip = async (
       .on('entry', async (entry: any) => {
         if (
           entry.type !== 'File' ||
-          !shouldIncludeFileWithPath(entry.path, includeGlobs, excludeGlobs)
+          !shouldIncludeFileWithPath(
+            entry.path,
+            includeGlobs,
+            excludeGlobs,
+            false,
+          )
         ) {
           // Ignore dotfiles, e.g. '.DS_Store'
           return;

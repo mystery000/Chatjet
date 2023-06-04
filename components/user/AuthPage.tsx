@@ -1,10 +1,10 @@
 import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeMinimal } from '@supabase/auth-ui-shared';
-import Image from 'next/image';
 import Link from 'next/link';
 import { FC } from 'react';
 
+import { MarkpromptIcon } from '@/components/icons/Markprompt';
 import Button from '@/components/ui/Button';
 import useUser from '@/lib/hooks/use-user';
 import { getAppOrigin } from '@/lib/utils.edge';
@@ -22,13 +22,7 @@ const AuthPage: FC<AuthPageProps> = ({ type }) => {
     <div className="px-6 sm:px-8">
       <div className="mx-auto w-min">
         <Link href="/">
-          <Image
-            src="/static/{chatjet.ai}.svg"
-            width={200}
-            height={64}
-            className="mx-auto text-white"
-            alt="chatjet.ai"
-          />
+          <MarkpromptIcon className="mx-auto mt-16 h-16 w-16 text-white outline-none" />
         </Link>
       </div>
       {!session ? (

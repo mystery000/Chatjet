@@ -1,5 +1,7 @@
 import { Team } from '@/types/types';
 
+import { roundToLowerOrderDecimal } from '../utils';
+
 type Price = {
   amount: number;
   priceIds: {
@@ -24,7 +26,7 @@ const env =
 export type TierPriceDetails = {
   name: string;
   quota: number;
-  numWebsitePagesPerProject: number;
+  numTokensPerTeam: number;
   price?: {
     monthly?: Price;
     yearly: Price;
@@ -135,18 +137,17 @@ export const TIERS: Record<Tier, TierDetails> = {
     name: 'Hobby',
     description: 'For personal and non-commercial projects',
     items: [
-      'Unlimited documents',
+      '25 indexed documents*',
+      '25 GPT-4 completions per month',
       'Unlimited BYO* completions',
-      '25 GPT-4 completions',
-      '50 indexed website pages per project',
       'Public/private GitHub repos',
     ],
-    notes: ['* BYO: Bring-your-own API key'],
+    notes: ['* Varies by document size', '* BYO: Bring-your-own API key'],
     prices: [
       {
         name: 'Free',
         quota: 25,
-        numWebsitePagesPerProject: 50,
+        numTokensPerTeam: 30_000,
       },
     ],
   },
@@ -154,15 +155,15 @@ export const TIERS: Record<Tier, TierDetails> = {
     name: 'Starter',
     description: 'For small projects',
     items: [
-      '500 GPT-4 completions',
-      '100 indexed website pages per project',
+      '100 indexed documents',
+      '200 GPT-4 completions per month',
       'Usage analytics',
     ],
     prices: [
       {
         name: 'Starter',
-        quota: 500,
-        numWebsitePagesPerProject: 100,
+        quota: 200,
+        numTokensPerTeam: 120_000,
         price: {
           monthly: {
             amount: 25,
@@ -186,17 +187,17 @@ export const TIERS: Record<Tier, TierDetails> = {
     name: 'Pro',
     description: 'For production',
     items: [
+      '500 indexed documents',
+      '1000 GPT-4 completions per month',
       'Prompt templates',
       'Model customization',
-      '1000 GPT-4 completions',
-      '200 indexed website pages per project',
       'Advanced analytics',
     ],
     prices: [
       {
         name: 'Pro',
         quota: 1000,
-        numWebsitePagesPerProject: 200,
+        numTokensPerTeam: 600_000,
         price: {
           monthly: {
             amount: 120,
@@ -233,7 +234,7 @@ export const TIERS: Record<Tier, TierDetails> = {
       {
         name: 'Enterprise',
         quota: -1,
-        numWebsitePagesPerProject: -1,
+        numTokensPerTeam: -1,
       },
     ],
   },
@@ -241,8 +242,6 @@ export const TIERS: Record<Tier, TierDetails> = {
 
 const maxAllowanceForEnterprise = 1_000_000;
 const quotaForLegacyPriceId = TIERS.pro.prices[0].quota;
-const legacyNumWebsitePagesPerProject =
-  TIERS.pro.prices[0].numWebsitePagesPerProject;
 
 export const getMonthlyQueryAllowance = (team: Team) => {
   if (team.is_enterprise_plan) {
@@ -258,30 +257,62 @@ export const getMonthlyQueryAllowance = (team: Team) => {
   }
 };
 
-export const isAtLeastPro = (team: Team): boolean => {
-  return team.is_enterprise_plan || !!team.stripe_price_id;
+export const isAtLeastPro = (
+  stripePriceId: string | null,
+  isEnterprisePlan: boolean,
+): boolean => {
+  return !!(
+    isEnterprisePlan ||
+    (stripePriceId && getTierFromPriceId(stripePriceId) === 'pro')
+  );
 };
 
-export const getNumWebsitePagesPerProjectAllowance = (
-  team: Team,
-): number | 'unlimited' => {
-  if (team.is_enterprise_plan) {
+export type TokenAllowance = number | 'unlimited';
+
+export const getNumTokensPerTeamAllowance = (
+  isEnterprisePlan: boolean,
+  stripePriceId: string | null | undefined,
+): TokenAllowance => {
+  if (isEnterprisePlan) {
     return 'unlimited';
-  } else if (team.stripe_price_id) {
-    const priceDetails = getTierPriceDetailsFromPriceId(team.stripe_price_id);
+  } else if (stripePriceId) {
+    const priceDetails = getTierPriceDetailsFromPriceId(stripePriceId);
     if (priceDetails) {
-      return priceDetails.numWebsitePagesPerProject;
+      return priceDetails.numTokensPerTeam;
     }
-    return legacyNumWebsitePagesPerProject;
+    // Deprecated plans were similar to the current pro plan, so if a
+    // user is on a deprecated plan, use the same allowance as the current
+    // pro plan.
+    return TIERS.pro.prices[0].numTokensPerTeam;
   } else {
-    return TIERS.hobby.prices[0].numWebsitePagesPerProject;
+    return TIERS.hobby.prices[0].numTokensPerTeam;
   }
+};
+
+export const getTeamTier = (team: Team): Tier => {
+  if (team.is_enterprise_plan) {
+    return 'enterprise';
+  } else if (team.stripe_price_id) {
+    const tier = getTierFromPriceId(team.stripe_price_id);
+    if (tier) {
+      return tier;
+    }
+  }
+  return 'hobby';
+};
+
+export const tokensToApproxParagraphs = (numTokens: number): number => {
+  return roundToLowerOrderDecimal(numTokens / 200);
 };
 
 export const canRemoveBranding = (team: Team) => {
   return team.is_enterprise_plan;
 };
 
+export const canEnableInstantSearch = (team: Team) => {
+  return isAtLeastPro(team.stripe_price_id, !!team.is_enterprise_plan);
+};
+
 export const canConfigureModel = (team: Team) => {
-  return isAtLeastPro(team);
+  return isAtLeastPro(team.stripe_price_id, !!team.is_enterprise_plan);
 };
