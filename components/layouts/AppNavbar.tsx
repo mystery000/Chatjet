@@ -79,7 +79,7 @@ export const AppNavbar: FC<AppNavbarProps> = ({ animated }) => {
                 </NavigationMenu.Item>
               }
             />
-            <NavigationMenu.Item>
+            {/* <NavigationMenu.Item>
               <NavigationMenu.Link
                 asChild
                 className="button-ring block h-full rounded-md px-2 py-1.5 text-sm text-neutral-300 hover:bg-neutral-900 hover:text-neutral-100 focus-visible:text-neutral-100"
@@ -88,7 +88,7 @@ export const AppNavbar: FC<AppNavbarProps> = ({ animated }) => {
                   Docs
                 </a>
               </NavigationMenu.Link>
-            </NavigationMenu.Item>
+            </NavigationMenu.Item> */}
           </NavigationMenu.List>
         </NavigationMenu.Root>
         <ProfileMenu />

@@ -880,7 +880,7 @@ const GetCode = ({
         <Dialog.Content className="animate-dialog-slide-in dialog-content flex h-[90%] max-h-[800px] w-[90%] max-w-[700px] flex-col">
           <Dialog.Title className="dialog-title-xl flex flex-none flex-row items-center gap-4">
             <div className="flex-grow truncate">Copy code</div>
-            <Button
+            {/* <Button
               variant="plain"
               buttonSize="sm"
               target="_blank"
@@ -888,7 +888,7 @@ const GetCode = ({
               Icon={Book}
             >
               Docs
-            </Button>
+            </Button> */}
             <div className="flex flex-none flex-row items-center gap-2">
               <label
                 className="flex-grow truncate text-sm font-normal text-neutral-500"

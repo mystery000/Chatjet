@@ -86,7 +86,7 @@ export const ModelConfigurator: FC<ModelConfiguratorProps> = () => {
             });
           }}
         />
-        <Link
+        {/* <Link
           href="/docs#templates"
           target="_blank"
           rel="noreferrer"
@@ -94,7 +94,7 @@ export const ModelConfigurator: FC<ModelConfiguratorProps> = () => {
         >
           <Info className="h-4 w-4 text-neutral-300" />
           <span className="subtle-underline">Learn more about templates</span>
-        </Link>
+        </Link> */}
       </div>
       <Accordion.Root className="mt-2 w-full" type="single" collapsible>
         <Accordion.Item value="options">
