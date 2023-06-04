@@ -9,10 +9,18 @@ import { getMarkdocStaticProps } from '@/lib/pages';
 const pageIds = JSON.parse(process.env.MOTIF_RESOURCES_PAGE_IDS!);
 
 export const getStaticPaths = async () => {
-  return {
-    paths: Object.keys(pageIds).map((path) => ({ params: { id: path } })),
-    fallback: false,
-  };
+  if(pageIds) {
+    return {
+      paths: Object.keys(pageIds).map((path) => ({ params: { id: path } })),
+      fallback: false,
+    };
+  } else {
+    return {
+      paths: [],
+      fallback: false,
+    };  
+  }
+  
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
