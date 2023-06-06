@@ -650,7 +650,7 @@ export const Playground = forwardRef(
               rel="noreferrer"
               style={{ color: colors?.primary }}
             >
-              Markprompt
+              Chatjet.ai
             </a>
           </div>
         )}
