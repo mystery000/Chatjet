@@ -1,5 +1,5 @@
 import cn from 'classnames';
-import { X, Search } from 'lucide-react';
+import { X, Search, Send, SendIcon } from 'lucide-react';
 import {
   FC,
   ForwardedRef,
@@ -20,8 +20,8 @@ import { Theme } from '@/lib/themes';
 import { timeout } from '@/lib/utils';
 import { getAppOrigin } from '@/lib/utils.edge';
 import { ModelConfig, ReferenceInfo } from '@/types/types';
-
-import useProject from '@/lib/hooks/use-project';
+import { NoAutoInput } from '@/components/ui/Input';
+import Button from '@/components/ui/Button';
 type CaretProps = {
   color?: string;
   className?: string;
@@ -140,7 +140,7 @@ export const Playground = forwardRef(
     forwardedRef: ForwardedRef<HTMLDivElement>,
   ) => {
     const [prompt, setPrompt] = useState<string | undefined>('');
-    const [answer, setAnswer] = useState('Hi, How may I assist you?');
+    const [answer, setAnswer] = useState('');
     const [references, setReferences] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -150,7 +150,6 @@ export const Playground = forwardRef(
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const _iDontKnowMessage = iDontKnowMessage || I_DONT_KNOW;
     const colors = isDark ? theme?.colors.dark : theme?.colors.light;
-    const { project } = useProject();
 
     useEffect(() => {
       if (!playing || !demoResponse || !demoPrompt) {
@@ -221,24 +220,23 @@ export const Playground = forwardRef(
         if (!projectKey) {
           return;
         }
-
+        const question = prompt;
+        setPrompt('');
         setAnswer('');
         setReferences([]);
         setLoading(true);
 
-        const controller = new AbortController();
-        const signal = controller.signal;
         try {
+          console.log(question);
           const res = await fetch(
-            `/api/v1/openai/completions/${project?.id}`,
-            // `http://localhost:3000/api/v1/openai/completions/${project?.id}`,
+            `${getAppOrigin('api', !!forceUseProdAPI)}/v1/completions`,
             {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({
-                prompt,
+                question,
                 iDontKnowMessage: _iDontKnowMessage,
                 ...modelConfig,
                 projectKey,
@@ -246,7 +244,6 @@ export const Playground = forwardRef(
               }),
             },
           );
-
           if (!res.ok || !res.body) {
             const text = await res.text();
             console.error(text);
@@ -267,7 +264,6 @@ export const Playground = forwardRef(
             const { value, done: doneReading } = await reader.read();
             done = doneReading;
             const chunkValue = decoder.decode(value);
-
             if (!didHandleHeader) {
               startText = startText + chunkValue;
               if (startText.includes(STREAM_SEPARATOR)) {
@@ -339,69 +335,6 @@ export const Playground = forwardRef(
           borderRadius: theme?.dimensions.radius,
         }}
       >
-        <div
-          className="relative flex flex-none flex-row items-center gap-2 border-b py-1 px-4"
-          style={{
-            borderColor: colors?.border,
-          }}
-        >
-          <div className="-mr-1 flex-none rounded p-1 transition hover:opacity-60">
-            <Search
-              className={cn({
-                'h-5 w-5': theme?.size === 'base',
-                'h-4 w-4': theme?.size === 'sm',
-              })}
-              style={{ color: colors?.foreground }}
-            />
-          </div>
-          <div className="flex-grow">
-            <form onSubmit={submitPrompt}>
-              <input
-                ref={inputRef}
-                value={prompt || ''}
-                type="text"
-                onChange={(e) => setPrompt(e.target.value)}
-                placeholder={placeholder}
-                className={cn(
-                  inputClassName,
-                  'mt-[2px] w-full appearance-none rounded-md border-0 bg-transparent outline-none transition duration-500 placeholder:text-neutral-500/80 focus:outline-none focus:ring-0',
-                  {
-                    'pointer-events-none': isDemoMode && playing,
-                    'text-sm': theme?.size === 'sm',
-                  },
-                )}
-                style={{
-                  caretColor: colors?.primary,
-                  color: colors?.foreground,
-                }}
-                autoComplete="off"
-                autoCorrect="off"
-                autoCapitalize="none"
-                spellCheck="false"
-                autoFocus={false}
-              />
-            </form>
-          </div>
-          {!hideCloseButton && (
-            <button
-              className={cn(
-                'button-ring -mr-1 flex-none rounded p-1 transition hover:opacity-60',
-                {
-                  'button-ring-light': !isDark,
-                },
-              )}
-              onClick={onCloseClick}
-            >
-              <X
-                className={cn({
-                  'h-5 w-5': theme?.size === 'base',
-                  'h-4 w-4': theme?.size === 'sm',
-                })}
-                style={{ color: colors?.foreground }}
-              />
-            </button>
-          )}
-        </div>
         <div
           ref={containerRef}
           className={cn(
@@ -637,9 +570,92 @@ export const Playground = forwardRef(
             </div>
           </>
         )}
+        <div
+          className="relative flex flex-none flex-row items-center gap-2 py-1 px-4"
+          style={{
+            borderColor: colors?.border,
+          }}
+        >
+          {/* <div className="-mr-1 flex-none rounded p-1 transition hover:opacity-60">
+            <Search
+              className={cn({
+                'h-5 w-5': theme?.size === 'base',
+                'h-4 w-4': theme?.size === 'sm',
+              })}
+              style={{ color: colors?.foreground }}
+            />
+          </div> */}
+          <div className="flex-grow">
+            <form onSubmit={submitPrompt}>
+              <div className="flex flex-none flex-row">
+                {/* <input
+                  ref={inputRef}
+                  value={prompt || ''}
+                  type="text"
+                  onChange={(e) => setPrompt(e.target.value)}
+                  placeholder={placeholder}
+                  className={cn(
+                    inputClassName,
+                    'mt-[2px] flex-grow appearance-none rounded-md border-0 bg-transparent outline-none transition duration-500 placeholder:text-neutral-500/80 focus:outline-none focus:ring-0',
+                    {
+                      'pointer-events-none': isDemoMode && playing,
+                      'text-sm': theme?.size === 'sm',
+                    },
+                  )}
+                  style={{
+                    caretColor: colors?.primary,
+                    color: colors?.foreground,
+                  }}
+                  autoComplete="off"
+                  autoCorrect="off"
+                  autoCapitalize="none"
+                  spellCheck="false"
+                  autoFocus={false}
+                /> */}
+                <NoAutoInput
+                  ref={inputRef}
+                  value={prompt || ''}
+                  type="text"
+                  onChange={(e: any) => setPrompt(e.target.value)}
+                  placeholder={placeholder}
+                  className={`grow !text-black text-[${colors?.foreground}] caret-[${colors?.foreground}] !focus:ring-sky-300 !rounded-none !rounded-l-md !border-gray-300 !bg-gray-100`}
+                />
+                <Button
+                  className="flex-none rounded-none rounded-r-md text-center"
+                  disabled={loading}
+                  loading={loading}
+                  variant="plain"
+                  buttonSize="xs"
+                  type="submit"
+                >
+                  <SendIcon className="mr-1 rotate-45" size={20} />
+                </Button>
+              </div>
+            </form>
+          </div>
+          {/* {!hideCloseButton && (
+            <button
+              className={cn(
+                'button-ring -mr-1 flex-none rounded p-1 transition hover:opacity-60',
+                {
+                  'button-ring-light': !isDark,
+                },
+              )}
+              onClick={onCloseClick}
+            >
+              <X
+                className={cn({
+                  'h-5 w-5': theme?.size === 'base',
+                  'h-4 w-4': theme?.size === 'sm',
+                })}
+                style={{ color: colors?.foreground }}
+              />
+            </button>
+          )} */}
+        </div>
         {includeBranding && (
           <div
-            className="z-0 justify-center border-t px-8 py-2 text-center text-xs font-medium"
+            className="z-0 justify-center px-8 py-2 text-center text-xs font-medium"
             style={{
               borderColor: colors?.border,
               backgroundColor: colors?.muted,
@@ -651,7 +667,7 @@ export const Playground = forwardRef(
               className={cn('button-ring rounded', {
                 'button-ring-light': !isDark,
               })}
-              href="http://chatjet.ai/"
+              href="https://markprompt.com"
               target="_blank"
               rel="noreferrer"
               style={{ color: colors?.primary }}
