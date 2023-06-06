@@ -496,7 +496,6 @@ export const generateFileEmbeddings = async (
           numOfAttempts: 10,
         },
       );
-
       embeddingsTokenCount += embeddingResult.usage?.total_tokens ?? 0;
 
       // if (numRemainingTokensOnPlan - embeddingsTokenCount < 0) {
@@ -504,7 +503,7 @@ export const generateFileEmbeddings = async (
 
         // The file has been created, so delete it to allow for a subsequent
         // processing.
-        
+
         await revertFileProcessing(supabaseAdmin, fileId);
         return [
           {
