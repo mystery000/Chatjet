@@ -2,7 +2,7 @@ import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeMinimal } from '@supabase/auth-ui-shared';
 import Link from 'next/link';
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 import { MarkpromptIcon } from '@/components/icons/Markprompt';
 import Button from '@/components/ui/Button';
@@ -17,7 +17,12 @@ const AuthPage: FC<AuthPageProps> = ({ type }) => {
   const session = useSession();
   const supabase = useSupabaseClient();
   const { signOut } = useUser();
+  const [host, setHost]= useState('');
 
+  useEffect(() =>{
+    setHost(window.location.host);
+  },[]);
+  
   return (
     <div className="px-6 sm:px-8">
       <div className="mx-auto w-min">
@@ -30,7 +35,7 @@ const AuthPage: FC<AuthPageProps> = ({ type }) => {
           <div className="mx-auto mt-16 max-w-sm">
             <Auth
               view={type === 'signup' ? 'sign_up' : 'sign_in'}
-              redirectTo={getAppOrigin() + '/'}
+              redirectTo={host + '/'}
               onlyThirdPartyProviders
               socialLayout="vertical"
               providers={['github', 'google']}
