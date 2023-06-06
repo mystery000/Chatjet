@@ -135,41 +135,40 @@ export default async function handler(req: NextRequest) {
     stream = false;
   }
 
-  const { pathname, searchParams } = new URL(req.url);
+//   const { pathname, searchParams } = new URL(req.url);
 
-  const lastPathComponent = pathname.split('/').slice(-1)[0];
-  let projectIdParam = undefined;
-  // TODO: need to investigate the difference between a request
-  // from the dashboard (2nd case here) and a request from
-  // an external origin (1st case here).
-  if (lastPathComponent === 'completions') {
-    projectIdParam = searchParams.get('project');
-  } else {  
-    projectIdParam = pathname.split('/').slice(-1)[0];
-  }
+//   const lastPathComponent = pathname.split('/').slice(-1)[0];
+//   let projectIdParam = undefined;
+//   // TODO: need to investigate the difference between a request
+//   // from the dashboard (2nd case here) and a request from
+//   // an external origin (1st case here).
+//   if (lastPathComponent === 'completions') {
+//     projectIdParam = searchParams.get('project');
+//   } else {  
+//     projectIdParam = pathname.split('/').slice(-1)[0];
+//   }
 
-  if (!projectIdParam) {
-    console.error(`[COMPLETIONS] [${pathname}] Project not found`);
-    return new Response('Project not found', { status: 400 });
-  }
+//   if (!projectIdParam) {
+//     console.error(`[COMPLETIONS] [${pathname}] Project not found`);
+//     return new Response('Project not found', { status: 400 });
+//   }
 
-  if (!prompt) {
-    console.error(`[COMPLETIONS] [${projectIdParam}] No prompt provided`);
-    return new Response('No prompt provided', { status: 400 });
-  }
+//   if (!prompt) {
+//     console.error(`[COMPLETIONS] [${projectIdParam}] No prompt provided`);
+//     return new Response('No prompt provided', { status: 400 });
+//   }
 
-  const projectId = projectIdParam as Project['id'];
 
-  console.log("projectId", projectId);
+//   const projectId = projectIdParam as Project['id'];
+  const projectId = '233f2f1f-ec01-4952-845e-4f1c03b53f64';
+
+  
 
   // Apply rate limits, in additional to middleware rate limits.
   const rateLimitResult = await checkCompletionsRateLimits({
     value: projectId,
     type: 'projectId',
   });
-
-
-  console.log("rateLimitResult", rateLimitResult);
 
   if (!rateLimitResult.result.success) {
     console.error(`[COMPLETIONS] [RATE-LIMIT] [${projectId}] IP: ${req.ip}`);
@@ -180,9 +179,6 @@ export default async function handler(req: NextRequest) {
     // Custom model configurations are part of the Pro and Enterprise plans
     // when used outside of the Markprompt dashboard.
     const teamStripeInfo = await getTeamStripeInfo(supabaseAdmin, projectId);
-
-  console.log("teamStripeInfo", teamStripeInfo);
-    
     if (!teamStripeInfo?.stripePriceId && !teamStripeInfo?.isEnterprisePlan) {
       // Custom model configurations are part of the Pro and Enterprise plans.
       params = {
@@ -238,10 +234,7 @@ export default async function handler(req: NextRequest) {
   // }
 
   const _prepareSectionText = (text: string) => {
-    console.log("text", text);
-
     return text.replace(/\n/g, ' ').trim();
-
   };
 
   let numTokens = 0;
@@ -268,7 +261,6 @@ export default async function handler(req: NextRequest) {
       .replace('{{CONTEXT}}', contextText)
       .replace('{{PROMPT}}', sanitizedQuery),
   );
-  console.log("fullPrompt", fullPrompt);
 
   const payload = getPayload(
     fullPrompt,
@@ -280,11 +272,8 @@ export default async function handler(req: NextRequest) {
     params.maxTokens || 500,
     stream,
   );
-
-  console.log("payload", payload);
-
   const url = getCompletionsUrl(modelInfo.model);
-  console.log("url", url);
+
   const res = await fetch(url, {
     headers: {
       'Content-Type': 'application/json',
@@ -296,16 +285,8 @@ export default async function handler(req: NextRequest) {
     body: JSON.stringify(payload),
   });
 
-  console.log("res", res);
-  if(!res.ok) {
-    const message = await res.text();
-    return new Response(
-      `Unable to retrieve completions response: ${message}`,
-      { status: 400 },
-    );
-  }
   const debugInfo = params.includeDebugInfo ? { fullPrompt } : {};
-  
+
   if (!stream) {
     if (!res.ok) {
       const message = await res.text();
@@ -323,9 +304,6 @@ export default async function handler(req: NextRequest) {
       );
     } else {
       const json = await res.json();
-
-      console.log("res", res);
-      
       // console.log(json);
       // TODO: track token count
       const tokenCount = safeParseInt(json.usage.total_tokens, 0);

@@ -80,7 +80,8 @@ export default async function handler(
     supabaseAdmin,
     projectId,
   );
-
+  
+  
   const errors = await generateFileEmbeddings(
     supabaseAdmin,
     projectId,

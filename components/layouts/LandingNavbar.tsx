@@ -23,9 +23,9 @@ export default function LandingNavbar({
       <Link href="/">
         <div className="flex flex-none flex-row items-center gap-4 text-white">
           <MarkpromptIcon className="mx-auto h-10 w-10 text-white" />
-          <div className="hidden text-lg font-semibold transition hover:opacity-80 lg:block">
+          {/* <div className="hidden text-lg font-semibold transition hover:opacity-80 lg:block">
             Markprompt
-          </div>
+          </div> */}
         </div>
       </Link>{' '}
       <div className="flex-grow" />

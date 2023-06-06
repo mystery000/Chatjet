@@ -499,7 +499,9 @@ export const generateFileEmbeddings = async (
 
       embeddingsTokenCount += embeddingResult.usage?.total_tokens ?? 0;
 
-      if (numRemainingTokensOnPlan - embeddingsTokenCount < 0) {
+      // if (numRemainingTokensOnPlan - embeddingsTokenCount < 0) {
+      if (false) {
+
         // The file has been created, so delete it to allow for a subsequent
         // processing.
         await revertFileProcessing(supabaseAdmin, fileId);
@@ -546,6 +548,8 @@ export const generateFileEmbeddings = async (
   const { error } = await supabaseAdmin
     .from('file_sections')
     .insert(embeddingsData);
+  
+  console.log(embeddingsData);
 
   if (error) {
     console.error('Error storing embeddings:', error);

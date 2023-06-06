@@ -330,7 +330,7 @@ const PlaygroundDashboard: FC<PlaygroundDashboardProps> = ({
   const startTraining = useCallback(async () => {
     await trainAllSources(
       () => {
-        // Do nothing
+        
       },
       (errorMessage: string) => {
         toast.error(errorMessage);
