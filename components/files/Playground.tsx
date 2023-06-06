@@ -21,6 +21,7 @@ import { timeout } from '@/lib/utils';
 import { getAppOrigin } from '@/lib/utils.edge';
 import { ModelConfig, ReferenceInfo } from '@/types/types';
 
+import useProject from '@/lib/hooks/use-project';
 type CaretProps = {
   color?: string;
   className?: string;
@@ -149,6 +150,7 @@ export const Playground = forwardRef(
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const _iDontKnowMessage = iDontKnowMessage || I_DONT_KNOW;
     const colors = isDark ? theme?.colors.dark : theme?.colors.light;
+    const { project } = useProject();
 
     useEffect(() => {
       if (!playing || !demoResponse || !demoPrompt) {
@@ -224,9 +226,12 @@ export const Playground = forwardRef(
         setReferences([]);
         setLoading(true);
 
-        try {
+        const controller = new AbortController();
+        const signal = controller.signal;
+        try { 
           const res = await fetch(
-            `${getAppOrigin('api', !!forceUseProdAPI)}/v1/completions`,
+            `/api/v1/openai/completions/${project?.id}`,
+            // `http://localhost:3000/api/v1/openai/completions/${project?.id}`,
             {
               method: 'POST',
               headers: {
@@ -239,9 +244,10 @@ export const Playground = forwardRef(
                 projectKey,
                 includeDebugInfo: true,
               }),
+              
             },
           );
-
+            
           if (!res.ok || !res.body) {
             const text = await res.text();
             console.error(text);
@@ -250,18 +256,19 @@ export const Playground = forwardRef(
             toast.error(text);
             return;
           }
-
+          
           const reader = res.body.getReader();
           const decoder = new TextDecoder();
           let done = false;
           let startText = '';
           let didHandleHeader = false;
           let refs: string[] = [];
-
+          
           while (!done) {
             const { value, done: doneReading } = await reader.read();
             done = doneReading;
             const chunkValue = decoder.decode(value);
+            
             if (!didHandleHeader) {
               startText = startText + chunkValue;
               if (startText.includes(STREAM_SEPARATOR)) {

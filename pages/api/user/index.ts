@@ -44,6 +44,7 @@ export default async function handler(
       .eq('id', session.user.id)
       .limit(1)
       .maybeSingle();
+    console.log(session.user.id);
 
     if (error) {
       console.error('Error GET:', error.message);
