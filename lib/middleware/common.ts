@@ -84,7 +84,7 @@ export const getProjectIdFromKey = async (
     console.error('Project not found', truncateMiddle(projectKey || ''));
     throw new ApiError(
       404,
-      `No project with projectKey ${truncateMiddle(
+      `No projects with projectKey ${truncateMiddle(
         projectKey,
       )} was found. Please provide a valid project key. You can obtain your project key in the Markprompt dashboard, under project settings.`,
     );
