@@ -230,7 +230,7 @@ export const Playground = forwardRef(
         const signal = controller.signal;
         try { 
           const res = await fetch(
-            `${getAppOrigin('api', !!forceUseProdAPI)}/v1/openai/completions/${project?.id}`,
+            `/api/v1/openai/completions/${project?.id}`,
             // `http://localhost:3000/api/v1/openai/completions/${project?.id}`,
             {
               method: 'POST',
