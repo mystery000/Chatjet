@@ -576,42 +576,9 @@ export const Playground = forwardRef(
             borderColor: colors?.border,
           }}
         >
-          {/* <div className="-mr-1 flex-none rounded p-1 transition hover:opacity-60">
-            <Search
-              className={cn({
-                'h-5 w-5': theme?.size === 'base',
-                'h-4 w-4': theme?.size === 'sm',
-              })}
-              style={{ color: colors?.foreground }}
-            />
-          </div> */}
           <div className="flex-grow">
             <form onSubmit={submitPrompt}>
               <div className="flex flex-none flex-row">
-                {/* <input
-                  ref={inputRef}
-                  value={prompt || ''}
-                  type="text"
-                  onChange={(e) => setPrompt(e.target.value)}
-                  placeholder={placeholder}
-                  className={cn(
-                    inputClassName,
-                    'mt-[2px] flex-grow appearance-none rounded-md border-0 bg-transparent outline-none transition duration-500 placeholder:text-neutral-500/80 focus:outline-none focus:ring-0',
-                    {
-                      'pointer-events-none': isDemoMode && playing,
-                      'text-sm': theme?.size === 'sm',
-                    },
-                  )}
-                  style={{
-                    caretColor: colors?.primary,
-                    color: colors?.foreground,
-                  }}
-                  autoComplete="off"
-                  autoCorrect="off"
-                  autoCapitalize="none"
-                  spellCheck="false"
-                  autoFocus={false}
-                /> */}
                 <NoAutoInput
                   ref={inputRef}
                   value={prompt || ''}
@@ -633,25 +600,6 @@ export const Playground = forwardRef(
               </div>
             </form>
           </div>
-          {/* {!hideCloseButton && (
-            <button
-              className={cn(
-                'button-ring -mr-1 flex-none rounded p-1 transition hover:opacity-60',
-                {
-                  'button-ring-light': !isDark,
-                },
-              )}
-              onClick={onCloseClick}
-            >
-              <X
-                className={cn({
-                  'h-5 w-5': theme?.size === 'base',
-                  'h-4 w-4': theme?.size === 'sm',
-                })}
-                style={{ color: colors?.foreground }}
-              />
-            </button>
-          )} */}
         </div>
         {includeBranding && (
           <div
