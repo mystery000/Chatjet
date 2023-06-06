@@ -228,7 +228,7 @@ export const Playground = forwardRef(
 
         const controller = new AbortController();
         const signal = controller.signal;
-        try { 
+        try {
           const res = await fetch(
             `/api/v1/openai/completions/${project?.id}`,
             // `http://localhost:3000/api/v1/openai/completions/${project?.id}`,
@@ -244,10 +244,9 @@ export const Playground = forwardRef(
                 projectKey,
                 includeDebugInfo: true,
               }),
-              
             },
           );
-            
+
           if (!res.ok || !res.body) {
             const text = await res.text();
             console.error(text);
@@ -256,19 +255,19 @@ export const Playground = forwardRef(
             toast.error(text);
             return;
           }
-          
+
           const reader = res.body.getReader();
           const decoder = new TextDecoder();
           let done = false;
           let startText = '';
           let didHandleHeader = false;
           let refs: string[] = [];
-          
+
           while (!done) {
             const { value, done: doneReading } = await reader.read();
             done = doneReading;
             const chunkValue = decoder.decode(value);
-            
+
             if (!didHandleHeader) {
               startText = startText + chunkValue;
               if (startText.includes(STREAM_SEPARATOR)) {
@@ -652,7 +651,7 @@ export const Playground = forwardRef(
               className={cn('button-ring rounded', {
                 'button-ring-light': !isDark,
               })}
-              href="https://markprompt.com"
+              href="http://chatjet.ai/"
               target="_blank"
               rel="noreferrer"
               style={{ color: colors?.primary }}
