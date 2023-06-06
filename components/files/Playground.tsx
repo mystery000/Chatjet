@@ -139,7 +139,7 @@ export const Playground = forwardRef(
     forwardedRef: ForwardedRef<HTMLDivElement>,
   ) => {
     const [prompt, setPrompt] = useState<string | undefined>('');
-    const [answer, setAnswer] = useState('');
+    const [answer, setAnswer] = useState('Hi, How may I assist you?');
     const [references, setReferences] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
