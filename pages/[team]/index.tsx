@@ -20,7 +20,7 @@ const Team = () => {
               variant="cta"
               href={`/settings/${team.slug}/projects/new`}
             >
-              New project
+              New Chatbot
             </Button>
           )}
         </>
