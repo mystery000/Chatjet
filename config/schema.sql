@@ -41,6 +41,17 @@ create table public.projects (
 );
 comment on table public.projects is 'Projects within a team.';
 
+-- Messages
+create table public.messages (
+  id                  uuid primary key default uuid_generate_v4(),
+  inserted_at         timestamp with time zone default timezone('utc'::text, now()) not null,
+  message             text,
+  team_id             uuid references public.teams on delete cascade not null,
+  project_id          uuid references public.projects on delete cascade not null,
+  created_by          uuid references public.users not null
+);
+comment on table public.messages is 'Messages within a project.';
+
 -- Sources
 create type source_type as enum ('github', 'motif', 'website', 'file-upload', 'api-upload');
 
@@ -408,6 +419,47 @@ create policy "Users can delete projects associated to teams they are members of
       select 1 from memberships
       where memberships.user_id = auth.uid()
       and memberships.team_id = projects.team_id
+    )
+  );
+
+-- Messages
+
+alter table messages
+  enable row level security;
+
+create policy "Users can only see messages associated to teams they are members of." on public.messages
+  for select using (
+    exists (
+      select 1 from memberships
+      where memberships.user_id = auth.uid()
+      and memberships.team_id = messages.team_id
+    )
+  );
+
+create policy "Users can insert messages associated to teams they are members of." on public.messages
+  for insert with check (
+    exists (
+      select 1 from memberships
+      where memberships.user_id = auth.uid()
+      and memberships.team_id = messages.team_id
+    )
+  );
+
+create policy "Users can update messages associated to teams they are members of." on public.messages
+  for update using (
+    exists (
+      select 1 from memberships
+      where memberships.user_id = auth.uid()
+      and memberships.team_id = messages.team_id
+    )
+  );
+
+create policy "Users can delete messages associated to teams they are members of." on public.messages
+  for delete using (
+    exists (
+      select 1 from memberships
+      where memberships.user_id = auth.uid()
+      and memberships.team_id = messages.team_id
     )
   );
 
