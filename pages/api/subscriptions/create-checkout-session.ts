@@ -31,7 +31,7 @@ export default async function handler(
   if (!session?.user) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
-
+  
   const redirect = `${getAppOrigin()}/${req.body.redirect}`;
 
   const stripeSession = await stripe.checkout.sessions.create({
