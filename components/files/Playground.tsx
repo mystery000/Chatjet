@@ -1,5 +1,5 @@
 import cn from 'classnames';
-import { X, Search, Send, SendIcon } from 'lucide-react';
+import { X, Search, SendIcon, UserCircle } from 'lucide-react';
 import {
   FC,
   ForwardedRef,
@@ -22,6 +22,8 @@ import { getAppOrigin } from '@/lib/utils.edge';
 import { ModelConfig, ReferenceInfo } from '@/types/types';
 import { NoAutoInput } from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
+import useMessages from '@/lib/hooks/use-messages';
+
 type CaretProps = {
   color?: string;
   className?: string;
@@ -140,7 +142,7 @@ export const Playground = forwardRef(
     forwardedRef: ForwardedRef<HTMLDivElement>,
   ) => {
     const [prompt, setPrompt] = useState<string | undefined>('');
-    const [answer, setAnswer] = useState('Hi, How may I assist you?');
+    const [answer, setAnswer] = useState('');
     const [references, setReferences] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -150,6 +152,11 @@ export const Playground = forwardRef(
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const _iDontKnowMessage = iDontKnowMessage || I_DONT_KNOW;
     const colors = isDark ? theme?.colors.dark : theme?.colors.light;
+    const {
+      messages,
+      mutate: mutateMessages,
+      loading: loadingMessages,
+    } = useMessages();
 
     useEffect(() => {
       if (!playing || !demoResponse || !demoPrompt) {
@@ -354,141 +361,162 @@ export const Playground = forwardRef(
           )}
           {/* Need a container for ReactMarkdown to be able to access
             :last-child and display the caret */}
-          <div>
-            <ReactMarkdown
-              components={{
-                p: (props) => (
-                  <WithCaret
-                    Component="p"
-                    style={{ color: colors?.foreground }}
-                    caretColor={colors?.primary}
-                    {...props}
-                  />
-                ),
-                span: (props) => (
-                  <WithCaret
-                    Component="span"
-                    style={{ color: colors?.foreground }}
-                    caretColor={colors?.primary}
-                    {...props}
-                  />
-                ),
-                strong: (props) => (
-                  <WithCaret
-                    Component="string"
-                    style={{ color: colors?.foreground }}
-                    caretColor={colors?.primary}
-                    {...props}
-                  />
-                ),
-                a: (props) => (
-                  <WithCaret
-                    Component="a"
-                    style={{ color: colors?.foreground }}
-                    caretColor={colors?.primary}
-                    {...props}
-                  />
-                ),
-                h1: (props) => (
-                  <WithCaret
-                    Component="h1"
-                    style={{ color: colors?.foreground }}
-                    caretColor={colors?.primary}
-                    {...props}
-                  />
-                ),
-                h2: (props) => (
-                  <WithCaret
-                    Component="h2"
-                    style={{ color: colors?.foreground }}
-                    caretColor={colors?.primary}
-                    {...props}
-                  />
-                ),
-                h3: (props) => (
-                  <WithCaret
-                    Component="h3"
-                    style={{ color: colors?.foreground }}
-                    caretColor={colors?.primary}
-                    {...props}
-                  />
-                ),
-                h4: (props) => (
-                  <WithCaret
-                    Component="h4"
-                    style={{ color: colors?.foreground }}
-                    caretColor={colors?.primary}
-                    {...props}
-                  />
-                ),
-                h5: (props) => (
-                  <WithCaret
-                    Component="h5"
-                    style={{ color: colors?.foreground }}
-                    caretColor={colors?.primary}
-                    {...props}
-                  />
-                ),
-                h6: (props) => (
-                  <WithCaret
-                    Component="h6"
-                    style={{ color: colors?.foreground }}
-                    caretColor={colors?.primary}
-                    {...props}
-                  />
-                ),
-                pre: (props) => (
-                  <WithCaret
-                    Component="pre"
-                    style={{
-                      backgroundColor: colors?.muted,
-                      borderColor: colors?.border,
-                    }}
-                    caretColor={colors?.primary}
-                    {...props}
-                  />
-                ),
-                code: (props) => (
-                  <WithCaret
-                    Component="code"
-                    style={{ color: colors?.foreground }}
-                    caretColor={colors?.primary}
-                    {...props}
-                  />
-                ),
-                td: (props) => (
-                  <WithCaret
-                    Component="td"
-                    style={{ color: colors?.foreground }}
-                    caretColor={colors?.primary}
-                    {...props}
-                  />
-                ),
-                li: (props) => (
-                  <WithCaret
-                    Component="li"
-                    style={{ color: colors?.foreground }}
-                    caretColor={colors?.primary}
-                    {...props}
-                  />
-                ),
-                img: (props) => (
-                  // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
-                  <img
-                    {...props}
-                    style={{
-                      backgroundColor: colors?.muted,
-                      borderColor: colors?.border,
-                      borderRadius: theme?.dimensions.radius,
-                    }}
-                  />
-                ),
-              }}
-              remarkPlugins={[remarkGfm]}
-            >
-              {answer}
-            </ReactMarkdown>
-            <div ref={answerContainerRef} />
+          <div className="flex flex-1 w-full justify-center overflow-auto">
+            <div className="w-full max-w-3xl">
+              {
+                messages.map(message => (
+                  <div key={message.id} className={`flex flex-row w-full p-1 ${message.type
+                    ? 'justify-end'
+                    : 'justify-start'}`}>
+                    <div className='flex flex-row items-start gap-1'>
+                      <div className={`${message.type ? 'order-2' : 'order-1'
+                        }`}>
+                        <UserCircle size={36} />
+                      </div>
+                      <div className={`px-2 grow w-fit lg:max-w-lg flex flex-col  rounded-lg  shadow-sm ${message.type
+                        ? 'order-1 mr-2 bg-[#1677ff] '
+                        : 'order-2 ml-2 bg-white/80 shadow-slate-200 border'
+                        }`}>
+                        <ReactMarkdown
+                          components={{
+                            p: (props) => (
+                              <WithCaret
+                                Component="p"
+                                style={{ color: !message.type ? colors?.foreground : 'white' }}
+                                caretColor={colors?.primary}
+                                {...props}
+                              />
+                            ),
+                            span: (props) => (
+                              <WithCaret
+                                Component="span"
+                                style={{ color: !message.type ? colors?.foreground : 'white' }}
+                                caretColor={colors?.primary}
+                                {...props}
+                              />
+                            ),
+                            strong: (props) => (
+                              <WithCaret
+                                Component="string"
+                                style={{ color: !message.type ? colors?.foreground : 'white' }}
+                                caretColor={colors?.primary}
+                                {...props}
+                              />
+                            ),
+                            a: (props) => (
+                              <WithCaret
+                                Component="a"
+                                style={{ color: !message.type ? colors?.foreground : 'white' }}
+                                caretColor={colors?.primary}
+                                {...props}
+                              />
+                            ),
+                            h1: (props) => (
+                              <WithCaret
+                                Component="h1"
+                                style={{ color: !message.type ? colors?.foreground : 'white' }}
+                                caretColor={colors?.primary}
+                                {...props}
+                              />
+                            ),
+                            h2: (props) => (
+                              <WithCaret
+                                Component="h2"
+                                style={{ color: !message.type ? colors?.foreground : 'white' }}
+                                caretColor={colors?.primary}
+                                {...props}
+                              />
+                            ),
+                            h3: (props) => (
+                              <WithCaret
+                                Component="h3"
+                                style={{ color: !message.type ? colors?.foreground : 'white' }}
+                                caretColor={colors?.primary}
+                                {...props}
+                              />
+                            ),
+                            h4: (props) => (
+                              <WithCaret
+                                Component="h4"
+                                style={{ color: !message.type ? colors?.foreground : 'white' }}
+                                caretColor={colors?.primary}
+                                {...props}
+                              />
+                            ),
+                            h5: (props) => (
+                              <WithCaret
+                                Component="h5"
+                                style={{ color: !message.type ? colors?.foreground : 'white' }}
+                                caretColor={colors?.primary}
+                                {...props}
+                              />
+                            ),
+                            h6: (props) => (
+                              <WithCaret
+                                Component="h6"
+                                style={{ color: !message.type ? colors?.foreground : 'white' }}
+                                caretColor={colors?.primary}
+                                {...props}
+                              />
+                            ),
+                            pre: (props) => (
+                              <WithCaret
+                                Component="pre"
+                                style={{
+                                  backgroundColor: colors?.muted,
+                                  borderColor: colors?.border,
+                                }}
+                                caretColor={colors?.primary}
+                                {...props}
+                              />
+                            ),
+                            code: (props) => (
+                              <WithCaret
+                                Component="code"
+                                style={{ color: colors?.foreground }}
+                                caretColor={colors?.primary}
+                                {...props}
+                              />
+                            ),
+                            td: (props) => (
+                              <WithCaret
+                                Component="td"
+                                style={{ color: colors?.foreground }}
+                                caretColor={colors?.primary}
+                                {...props}
+                              />
+                            ),
+                            li: (props) => (
+                              <WithCaret
+                                Component="li"
+                                style={{ color: colors?.foreground }}
+                                caretColor={colors?.primary}
+                                {...props}
+                              />
+                            ),
+                            img: (props) => (
+                              // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
+                              <img
+                                {...props}
+                                style={{
+                                  backgroundColor: colors?.muted,
+                                  borderColor: colors?.border,
+                                  borderRadius: theme?.dimensions.radius,
+                                }}
+                              />
+                            ),
+                          }}
+                          remarkPlugins={[remarkGfm]}
+                        >
+                          {message.message}
+                        </ReactMarkdown>
+                        <div ref={answerContainerRef} />
+                      </div>
+                    </div>
+                  </div>
+                ))
+              }
+            </div>
           </div>
         </div>
         {(loading || references.length > 0) && (

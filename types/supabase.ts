@@ -151,6 +151,35 @@ export interface Database {
           team_id?: string
         }
       }
+      messages: {
+        Row: {
+          id: string
+          inserted_at: string
+          message: string | null         
+          team_id: string
+          project_id: string
+          created_by: string
+          type: boolean | false
+        }
+        Insert: {
+          id?: string
+          inserted_at?: string
+          message: string | null         
+          team_id: string
+          project_id: string
+          created_by: string
+          type: boolean | false
+        }
+        Update: {
+          id?: string
+          inserted_at?: string
+          message?: string | null         
+          team_id?: string
+          project_id?: string
+          created_by?: string
+          type?: boolean | false
+        }
+      }
       prompt_configs: {
         Row: {
           config: Json | null

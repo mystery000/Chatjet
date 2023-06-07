@@ -48,7 +48,8 @@ create table public.messages (
   message             text,
   team_id             uuid references public.teams on delete cascade not null,
   project_id          uuid references public.projects on delete cascade not null,
-  created_by          uuid references public.users not null
+  created_by          uuid references public.users not null,
+  type                boolean default false
 );
 comment on table public.messages is 'Messages within a project.';
 

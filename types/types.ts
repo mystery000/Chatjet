@@ -109,6 +109,7 @@ export type ModelConfig = {
 export type DbUser = Database['public']['Tables']['users']['Row'];
 export type Team = Database['public']['Tables']['teams']['Row'];
 export type Project = Database['public']['Tables']['projects']['Row'];
+export type Message = Database['public']['Tables']['messages']['Row'];
 export type Token = Database['public']['Tables']['tokens']['Row'];
 export type Domain = Database['public']['Tables']['domains']['Row'];
 export type Membership = Database['public']['Tables']['memberships']['Row'];
