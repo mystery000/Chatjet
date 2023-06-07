@@ -11,6 +11,7 @@ import {
   SourceType,
   Team,
   Token,
+  Message,
 } from '@/types/types';
 
 export const updateUser = async (values: Partial<DbUser>): Promise<DbUser> => {
@@ -177,6 +178,18 @@ export const createProject = async (teamId: Team['id'], name: string) => {
 export const deleteProject = async (projectId: Team['id']) => {
   fetch(`/api/project/${projectId}`, { method: 'DELETE' });
 };
+
+export const createMessage = async (projectId: Project['id'], teamId: Team['id'], message: String, type: Boolean) => {
+  const res = await fetch(`/api/project/${projectId}/messages`, {
+    method: 'POST',
+    body: JSON.stringify({ teamId, message, type }),
+    headers: {
+      'Content-Type': 'application/json',
+      accept: 'application/json',
+    },
+  });
+  return getResponseOrThrow<Message>(res);
+}
 
 export const isTeamSlugAvailable = async (slug: string): Promise<boolean> => {
   const res = await fetch('/api/slug/is-team-slug-available', {

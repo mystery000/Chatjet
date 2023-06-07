@@ -22,6 +22,10 @@ import { getAppOrigin } from '@/lib/utils.edge';
 import { ModelConfig, ReferenceInfo } from '@/types/types';
 import { NoAutoInput } from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
+import { Message } from '@/types/types';
+import { createMessage } from '@/lib/api';
+import useTeam from '@/lib/hooks/use-team';
+import useProject from '@/lib/hooks/use-project';
 import useMessages from '@/lib/hooks/use-messages';
 
 type CaretProps = {
@@ -152,11 +156,9 @@ export const Playground = forwardRef(
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const _iDontKnowMessage = iDontKnowMessage || I_DONT_KNOW;
     const colors = isDark ? theme?.colors.dark : theme?.colors.light;
-    const {
-      messages,
-      mutate: mutateMessages,
-      loading: loadingMessages,
-    } = useMessages();
+    const { team } = useTeam();
+    const { project } = useProject();
+    const { messages, mutate: mutateMessages, loading: loadingMessages } = useMessages();
 
     useEffect(() => {
       if (!playing || !demoResponse || !demoPrompt) {
@@ -232,6 +234,12 @@ export const Playground = forwardRef(
         setAnswer('');
         setReferences([]);
         setLoading(true);
+
+        if (!project || !team) {
+          return;
+        }
+        // const promptMessage: Message = await createMessage(project?.id, team?.id, question, true)
+        // await mutateMessages([...messages, promptMessage])
 
         try {
           const res = await fetch(
@@ -350,7 +358,7 @@ export const Playground = forwardRef(
             <img src="/static/favicons/favicon.ico" className='w-8 h-8' />
             <div className='font-bold'>Chatbase</div>
           </div>
-          <div className="flex-none rounded p-1 transition hover:opacity-60">
+          <div className="flex-none rounded p-1 transition hover:opacity-60 cursor-pointer">
             <RefreshCw className='text-gray-500' size={20} />
           </div>
         </div>
