@@ -237,11 +237,10 @@ export default async function handler(req: NextRequest) {
   //   });
   // }
 
+
   const _prepareSectionText = (text: string) => {
     console.log("text", text);
-
     return text.replace(/\n/g, ' ').trim();
-
   };
 
   let numTokens = 0;

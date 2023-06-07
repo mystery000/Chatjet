@@ -217,7 +217,7 @@ export const Playground = forwardRef(
         await timeout(Math.random() * 10 + 70);
       }
     }, []);
-
+    
     const submitPrompt = useCallback(
       async (e: SyntheticEvent<EventTarget>) => {
         e.preventDefault();
