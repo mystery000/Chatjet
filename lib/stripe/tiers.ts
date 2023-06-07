@@ -168,15 +168,15 @@ export const TIERS: Record<Tier, TierDetails> = {
           monthly: {
             amount: 25,
             priceIds: {
-              test: 'price_1N8Wh6Cv3sM26vDeKjjg71C7',
-              production: 'price_1N8WfxCv3sM26vDeN9BnA5D3',
+              test: 'price_1NGMgHGgGPXWWCh5T4pJv7K8',
+              production: 'price_1NGMgHGgGPXWWCh5T4pJv7K8',
             },
           },
           yearly: {
             amount: 20,
             priceIds: {
-              test: 'price_1N8Wh6Cv3sM26vDeNTZ2D1K2',
-              production: 'price_1N8WfxCv3sM26vDerkB8Tkmz',
+              test: 'price_1NGMgrGgGPXWWCh5NQq8i5lw',
+              production: 'price_1NGMgrGgGPXWWCh5NQq8i5lw',
             },
           },
         },
@@ -202,8 +202,8 @@ export const TIERS: Record<Tier, TierDetails> = {
           monthly: {
             amount: 120,
             priceIds: {
-              test: 'price_1N0TzLCv3sM26vDeQ7VxLKWP',
-              production: 'price_1N0U0ICv3sM26vDes1KHwQ4y',
+              test: 'price_1NGMeWGgGPXWWCh5KPk6Vwc2',
+              production: 'price_1NGMeWGgGPXWWCh5KPk6Vwc2',
             },
           },
           yearly: {
