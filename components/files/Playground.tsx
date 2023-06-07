@@ -1,5 +1,5 @@
 import cn from 'classnames';
-import { X, Search, SendIcon, UserCircle } from 'lucide-react';
+import { X, Baby, SendIcon, RefreshCw } from 'lucide-react';
 import {
   FC,
   ForwardedRef,
@@ -234,7 +234,6 @@ export const Playground = forwardRef(
         setLoading(true);
 
         try {
-          console.log(question);
           const res = await fetch(
             `${getAppOrigin('api', !!forceUseProdAPI)}/v1/completions`,
             {
@@ -343,6 +342,19 @@ export const Playground = forwardRef(
         }}
       >
         <div
+          className="relative flex flex-none flex-row items-center gap-2 justify-between border-b py-2 mx-4"
+          style={{
+            borderColor: colors?.border,
+          }}>
+          <div className='text-black/90 flex flex-row gap-2 items-center'>
+            <img src="/static/favicons/favicon.ico" className='w-8 h-8' />
+            <div className='font-bold'>Chatbase</div>
+          </div>
+          <div className="flex-none rounded p-1 transition hover:opacity-60">
+            <RefreshCw className='text-gray-500' size={20} />
+          </div>
+        </div>
+        <div
           ref={containerRef}
           className={cn(
             'hidden-scrollbar prompt-answer prose z-0 flex max-w-full flex-grow flex-col overflow-y-auto scroll-smooth px-8 py-4',
@@ -368,148 +380,12 @@ export const Playground = forwardRef(
                   <div key={message.id} className={`flex flex-row w-full p-1 ${message.type
                     ? 'justify-end'
                     : 'justify-start'}`}>
-                    <div className='flex flex-row items-start gap-1'>
-                      <div className={`${message.type ? 'order-2' : 'order-1'
+                    <div className='flex flex-row items-start'>
+                      <div className={`px-3 py-2 grow w-fit lg:max-w-lg flex flex-col  rounded-lg rounded-tr-lg shadow-sm ${message.type
+                        ? 'order-1 mr-2 bg-gray-300 text-black'
+                        : 'order-2 ml-2 bg-black/80 shadow-slate-200 border text-white'
                         }`}>
-                        <UserCircle size={36} />
-                      </div>
-                      <div className={`px-2 grow w-fit lg:max-w-lg flex flex-col  rounded-lg  shadow-sm ${message.type
-                        ? 'order-1 mr-2 bg-[#1677ff] '
-                        : 'order-2 ml-2 bg-white/80 shadow-slate-200 border'
-                        }`}>
-                        <ReactMarkdown
-                          components={{
-                            p: (props) => (
-                              <WithCaret
-                                Component="p"
-                                style={{ color: !message.type ? colors?.foreground : 'white' }}
-                                caretColor={colors?.primary}
-                                {...props}
-                              />
-                            ),
-                            span: (props) => (
-                              <WithCaret
-                                Component="span"
-                                style={{ color: !message.type ? colors?.foreground : 'white' }}
-                                caretColor={colors?.primary}
-                                {...props}
-                              />
-                            ),
-                            strong: (props) => (
-                              <WithCaret
-                                Component="string"
-                                style={{ color: !message.type ? colors?.foreground : 'white' }}
-                                caretColor={colors?.primary}
-                                {...props}
-                              />
-                            ),
-                            a: (props) => (
-                              <WithCaret
-                                Component="a"
-                                style={{ color: !message.type ? colors?.foreground : 'white' }}
-                                caretColor={colors?.primary}
-                                {...props}
-                              />
-                            ),
-                            h1: (props) => (
-                              <WithCaret
-                                Component="h1"
-                                style={{ color: !message.type ? colors?.foreground : 'white' }}
-                                caretColor={colors?.primary}
-                                {...props}
-                              />
-                            ),
-                            h2: (props) => (
-                              <WithCaret
-                                Component="h2"
-                                style={{ color: !message.type ? colors?.foreground : 'white' }}
-                                caretColor={colors?.primary}
-                                {...props}
-                              />
-                            ),
-                            h3: (props) => (
-                              <WithCaret
-                                Component="h3"
-                                style={{ color: !message.type ? colors?.foreground : 'white' }}
-                                caretColor={colors?.primary}
-                                {...props}
-                              />
-                            ),
-                            h4: (props) => (
-                              <WithCaret
-                                Component="h4"
-                                style={{ color: !message.type ? colors?.foreground : 'white' }}
-                                caretColor={colors?.primary}
-                                {...props}
-                              />
-                            ),
-                            h5: (props) => (
-                              <WithCaret
-                                Component="h5"
-                                style={{ color: !message.type ? colors?.foreground : 'white' }}
-                                caretColor={colors?.primary}
-                                {...props}
-                              />
-                            ),
-                            h6: (props) => (
-                              <WithCaret
-                                Component="h6"
-                                style={{ color: !message.type ? colors?.foreground : 'white' }}
-                                caretColor={colors?.primary}
-                                {...props}
-                              />
-                            ),
-                            pre: (props) => (
-                              <WithCaret
-                                Component="pre"
-                                style={{
-                                  backgroundColor: colors?.muted,
-                                  borderColor: colors?.border,
-                                }}
-                                caretColor={colors?.primary}
-                                {...props}
-                              />
-                            ),
-                            code: (props) => (
-                              <WithCaret
-                                Component="code"
-                                style={{ color: colors?.foreground }}
-                                caretColor={colors?.primary}
-                                {...props}
-                              />
-                            ),
-                            td: (props) => (
-                              <WithCaret
-                                Component="td"
-                                style={{ color: colors?.foreground }}
-                                caretColor={colors?.primary}
-                                {...props}
-                              />
-                            ),
-                            li: (props) => (
-                              <WithCaret
-                                Component="li"
-                                style={{ color: colors?.foreground }}
-                                caretColor={colors?.primary}
-                                {...props}
-                              />
-                            ),
-                            img: (props) => (
-                              // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
-                              <img
-                                {...props}
-                                style={{
-                                  backgroundColor: colors?.muted,
-                                  borderColor: colors?.border,
-                                  borderRadius: theme?.dimensions.radius,
-                                }}
-                              />
-                            ),
-                          }}
-                          remarkPlugins={[remarkGfm]}
-                        >
-                          {message.message}
-                        </ReactMarkdown>
+                        {message.message}
                         <div ref={answerContainerRef} />
                       </div>
                     </div>
