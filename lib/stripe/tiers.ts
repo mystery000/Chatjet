@@ -209,8 +209,8 @@ export const TIERS: Record<Tier, TierDetails> = {
           yearly: {
             amount: 100,
             priceIds: {
-              test: 'price_1NEQRFGgGPXWWCh53BX7iUsq',
-              production: 'price_1NEQRFGgGPXWWCh53BX7iUsq',
+              test: 'price_1NGMcqGgGPXWWCh512wYHgfL',
+              production: 'price_1NGMcqGgGPXWWCh512wYHgfL',
             },
           },
         },
