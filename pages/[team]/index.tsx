@@ -11,7 +11,7 @@ const Team = () => {
 
   return (
     <TeamSettingsLayout
-      title="Projects"
+      title="Chatbots"
       RightHeading={() => (
         <>
           {team?.slug && (
