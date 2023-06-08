@@ -250,7 +250,7 @@ export const Playground = forwardRef(
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({
-                question,
+                prompt: question,
                 iDontKnowMessage: _iDontKnowMessage,
                 ...modelConfig,
                 projectKey,
@@ -379,9 +379,10 @@ export const Playground = forwardRef(
           {loading && !(answer.length > 0) && (
             <Caret className="mt-4" color={colors?.primary} />
           )}
+          {answer}
           {/* Need a container for ReactMarkdown to be able to access
             :last-child and display the caret */}
-          <div className="flex flex-1 w-full justify-center overflow-auto">
+          {/* <div className="flex flex-1 w-full justify-center overflow-auto">
             <div className="w-full max-w-3xl">
               {
                 messages.map(message => (
@@ -401,7 +402,7 @@ export const Playground = forwardRef(
                 ))
               }
             </div>
-          </div>
+          </div> */}
         </div>
         {(loading || references.length > 0) && (
           <>
