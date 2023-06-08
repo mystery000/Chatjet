@@ -77,7 +77,7 @@ export const Segment: FC<SegmentProps> = ({
       {variant === 'toggle' && (
         <div
           className={cn(
-            'absolute top-0.5 bottom-0.5 z-0 transform rounded-full bg-fuchsia-600',
+            'absolute top-0.5 bottom-0.5 z-0 transform rounded-full bg-[#9df15b]',
             {
               'transition-all duration-300 ease-in-out': hasInteractedOnce,
             },
