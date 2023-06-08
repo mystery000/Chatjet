@@ -22,10 +22,6 @@ import { getAppOrigin } from '@/lib/utils.edge';
 import { ModelConfig, ReferenceInfo } from '@/types/types';
 import { NoAutoInput } from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
-import { Message } from '@/types/types';
-import { createMessage } from '@/lib/api';
-import useTeam from '@/lib/hooks/use-team';
-import useProject from '@/lib/hooks/use-project';
 import useMessages from '@/lib/hooks/use-messages';
 
 type CaretProps = {
@@ -156,9 +152,11 @@ export const Playground = forwardRef(
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const _iDontKnowMessage = iDontKnowMessage || I_DONT_KNOW;
     const colors = isDark ? theme?.colors.dark : theme?.colors.light;
-    const { team } = useTeam();
-    const { project } = useProject();
-    const { messages, mutate: mutateMessages, loading: loadingMessages } = useMessages();
+    const {
+      messages,
+      mutate: mutateMessages,
+      loading: loadingMessages,
+    } = useMessages();
 
     useEffect(() => {
       if (!playing || !demoResponse || !demoPrompt) {
@@ -217,7 +215,7 @@ export const Playground = forwardRef(
         await timeout(Math.random() * 10 + 70);
       }
     }, []);
-    
+
     const submitPrompt = useCallback(
       async (e: SyntheticEvent<EventTarget>) => {
         e.preventDefault();
@@ -234,12 +232,6 @@ export const Playground = forwardRef(
         setAnswer('');
         setReferences([]);
         setLoading(true);
-
-        if (!project || !team) {
-          return;
-        }
-        // const promptMessage: Message = await createMessage(project?.id, team?.id, question, true)
-        // await mutateMessages([...messages, promptMessage])
 
         try {
           const res = await fetch(
@@ -266,7 +258,6 @@ export const Playground = forwardRef(
             toast.error(text);
             return;
           }
-
           const reader = res.body.getReader();
           const decoder = new TextDecoder();
           let done = false;
@@ -320,7 +311,6 @@ export const Playground = forwardRef(
       ) {
         return;
       }
-
       const childRect = answerContainerRef.current.getBoundingClientRect();
       containerRef.current.scrollTop = childRect.bottom;
     }, [answer, loading, autoScrollDisabled, references]);
@@ -350,16 +340,17 @@ export const Playground = forwardRef(
         }}
       >
         <div
-          className="relative flex flex-none flex-row items-center gap-2 justify-between border-b py-2 mx-4"
+          className="relative mx-4 flex flex-none flex-row items-center justify-between gap-2 border-b py-2"
           style={{
             borderColor: colors?.border,
-          }}>
-          <div className='text-black/90 flex flex-row gap-2 items-center'>
-            <img src="/static/favicons/favicon.ico" className='w-8 h-8' />
-            <div className='font-bold'>Chatbase</div>
+          }}
+        >
+          <div className="flex flex-row items-center gap-2 text-black/90">
+            <img src="/static/favicons/favicon.ico" className="h-8 w-8" />
+            <div className="font-bold">Chatbase</div>
           </div>
-          <div className="flex-none rounded p-1 transition hover:opacity-60 cursor-pointer">
-            <RefreshCw className='text-gray-500' size={20} />
+          <div className="flex-none cursor-pointer rounded p-1 transition hover:opacity-60" title='Refresh'>
+            <RefreshCw className="text-gray-500" size={20} />
           </div>
         </div>
         <div
@@ -379,30 +370,37 @@ export const Playground = forwardRef(
           {loading && !(answer.length > 0) && (
             <Caret className="mt-4" color={colors?.primary} />
           )}
-          {answer}
           {/* Need a container for ReactMarkdown to be able to access
             :last-child and display the caret */}
-          {/* <div className="flex flex-1 w-full justify-center overflow-auto">
+          <div className="flex w-full flex-1 justify-center overflow-auto">
             <div className="w-full max-w-3xl">
-              {
-                messages.map(message => (
-                  <div key={message.id} className={`flex flex-row w-full p-1 ${message.type
-                    ? 'justify-end'
-                    : 'justify-start'}`}>
-                    <div className='flex flex-row items-start'>
-                      <div className={`px-3 py-2 grow w-fit lg:max-w-lg flex flex-col  rounded-lg rounded-tr-lg shadow-sm ${message.type
-                        ? 'order-1 mr-2 bg-gray-300 text-black'
-                        : 'order-2 ml-2 bg-black/80 shadow-slate-200 border text-white'
-                        }`}>
-                        {message.message}
-                        <div ref={answerContainerRef} />
+              {messages.map((message) => (
+                <>
+                  <div
+                    key={message.id}
+                    className="flex w-full flex-row justify-end p-1"
+                  >
+                    <div className="flex flex-row items-start">
+                      <div className="order-2 flex w-fit grow flex-col rounded-lg  rounded-tr-lg border bg-gray-300 px-3 py-1 text-black shadow-sm shadow-slate-200 lg:max-w-lg">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.prompt || ''}</ReactMarkdown>
                       </div>
                     </div>
                   </div>
-                ))
-              }
+                  <div
+                    key={message.id}
+                    className="flex w-full flex-row justify-start p-1"
+                  >
+                    <div className="flex flex-row items-start">
+                      <div className="order-1 flex w-fit grow flex-col rounded-lg  rounded-tr-lg border bg-black/80 px-3 py-1 text-white shadow-sm shadow-slate-200 lg:max-w-lg">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.response || ''}</ReactMarkdown>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ))}
+              <div ref={answerContainerRef} />
             </div>
-          </div> */}
+          </div>
         </div>
         {(loading || references.length > 0) && (
           <>
