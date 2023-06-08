@@ -24,7 +24,7 @@ const NewProject = () => {
   const { projects, mutate: mutateProjects } = useProjects();
 
   return (
-    <TeamSettingsLayout title="New project" width="xs">
+    <TeamSettingsLayout title="New Chatbot" width="xs">
       <div className="mx-auto">
         <div>
           <Formik
