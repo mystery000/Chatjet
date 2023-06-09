@@ -2,21 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+@import 'prism.css';
 
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #718096;
+  background-color: #686868;
+  border-radius: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background-color: #CBD5E0;
+  background-color: #424242;
 }
-
-@import 'prism.css';
-
 @layer base {
   :root {
     --color-neutral-1000: #0e0e0e;

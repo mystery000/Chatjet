@@ -359,7 +359,7 @@ export const Playground = forwardRef(
         <div
           ref={containerRef}
           className={cn(
-            'hidden-scrollbar prompt-answer prose z-0 flex max-w-full flex-grow flex-col overflow-y-auto scroll-smooth px-4 py-4',
+            'prompt-answer hidden-scrollbar prose z-0 mx-4 flex max-w-full flex-grow flex-col overflow-y-auto scroll-smooth px-4 py-4',
             {
               'prompt-answer-done': !loading,
               'prompt-answer-loading': loading,
@@ -375,7 +375,7 @@ export const Playground = forwardRef(
           )}
           {/* Need a container for ReactMarkdown to be able to access
             :last-child and display the caret */}
-          <div className="flex w-full flex-1 justify-center overflow-auto px-4">
+          <div className="flex w-full flex-1 justify-center">
             <div className="w-full max-w-3xl">
               {messages
                 .sort((a, b) => {
