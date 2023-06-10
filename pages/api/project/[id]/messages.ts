@@ -36,6 +36,7 @@ export default async function handler(
         const { data: messages, error } = await supabase
             .from('query_stats')
             .select('*')
+            .order('created_at', {ascending: true})
             .eq('project_id', projectId);
         if (error) {
             return res.status(400).json({ error: error.message });
