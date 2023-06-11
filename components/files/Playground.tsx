@@ -412,14 +412,12 @@ export const Playground = forwardRef(
                   })}
                 >
                   <div
-                    className={cn('mb-3 overflow-auto rounded-lg px-4', {
+                    className={cn('mb-3 overflow-auto rounded-lg py-3 px-4', {
                       'bg-gray-100 text-black': message.isChatbot,
                       'bg-sky-500 text-white': !message.isChatbot,
                     })}
                   >
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                      {message.text}
-                    </ReactMarkdown>
+                    {message.text}
                   </div>
                 </div>
               );
