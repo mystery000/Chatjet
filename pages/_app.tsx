@@ -1,5 +1,4 @@
 import '@/styles/globals.css';
-import '@/styles/slider.css';
 
 import { createBrowserSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import {

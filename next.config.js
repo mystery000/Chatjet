@@ -23,7 +23,6 @@ const nextConfig = {
       { protocol: 'https', hostname: '**.githubusercontent.com' },
       { protocol: 'https', hostname: '**.cloudinary.com' },
     ],
-    domains: ['framerusercontent.com'],
   },
   async headers() {
     return [{ source: '/(.*)', headers: corsHeaders }];

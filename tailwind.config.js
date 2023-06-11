@@ -11,25 +11,6 @@ module.exports = {
   ],
   theme: {
     extend: {
-      screens: {
-        max1440: { max: '1440px' },
-        max1200: { max: '1200px' },
-        max980: { max: '980px' },
-        max768: { max: '768px' },
-        sm: '640px',
-        // => @media (min-width: 640px) { ... }
-
-        md: '768px',
-        // => @media (min-width: 768px) { ... }
-
-        lg: '1024px',
-        // => @media (min-width: 1024px) { ... }
-
-        xl: '1280px',
-        // => @media (min-width: 1280px) { ... }
-
-        '2xl': '1536px',
-      },
       colors: {
         primary: colors.fuchsia,
         neutral: {
