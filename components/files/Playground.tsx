@@ -158,7 +158,10 @@ export const Playground = forwardRef(
     >([]);
 
     useEffect(() => {
-      setMessages([{ isChatbot: true, text: 'Hi! What can I help you with?' }]);
+      playing &&
+        setMessages([
+          { isChatbot: true, text: 'Hi! What can I help you with?' },
+        ]);
     }, []);
 
     useEffect(() => {
