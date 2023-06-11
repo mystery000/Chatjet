@@ -1,13 +1,13 @@
-import * as Slider from '@radix-ui/react-slider';
+// import * as Slider from '@radix-ui/react-slider';
 import { Application } from '@splinetool/runtime';
 import cn from 'classnames';
 import Link from 'next/link';
 import { FC, useEffect, useState } from 'react';
 import Balancer from 'react-wrap-balancer';
-
+import Slider, { Settings } from 'react-slick';
 import { AngeListIcon } from '@/components/icons/AngelList';
 import { CalIcon } from '@/components/icons/Cal';
-import { GitHubIcon } from '@/components/icons/GitHub';
+import { GitHubIcon } from '../icons/GitHub';
 import { MarkpromptIcon } from '@/components/icons/Markprompt';
 import { MotifIcon } from '@/components/icons/Motif';
 import { ReploIcon } from '@/components/icons/Replo';
@@ -27,6 +27,65 @@ import { DiscordIcon } from '../icons/Discord';
 import { ListItem } from '../ui/ListItem';
 import { Segment } from '../ui/Segment';
 import { Tag } from '../ui/Tag';
+import Image from 'next/image';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+import { CheckCircle } from 'lucide-react';
+import AppFooter from '../layouts/AppFooter';
+
+const logos = [
+  <DiscordIcon className="h-20 w-20" />,
+  <TwitterIcon className="h-20 w-20" />,
+  <CalIcon className="h-20 w-20" />,
+  <GitHubIcon className="h-20 w-20" />,
+];
+
+const PricingTiers = [
+  {
+    name: 'Personal',
+    price: '$5',
+    duration: 'p/month',
+    items: ['1 projects', 'Analytics', 'Insights Panel', 'Share Features'],
+    highlight: false,
+  },
+  {
+    name: 'Professional',
+    price: '$10',
+    duration: 'p/month',
+    items: ['2 projects', 'Analytics', 'Insights Panel', 'Share Features'],
+    highlight: true,
+  },
+  {
+    name: 'Business',
+    price: '$50',
+    duration: 'p/month',
+    highlight: false,
+    items: [
+      'Unlimited projects',
+      'Analytics',
+      'Insights Panel',
+      'Share Features',
+    ],
+  },
+];
+
+const testimonials = [
+  {
+    image:
+      'https://framerusercontent.com/images/KAOATpHBGtqCGW7RMDMWbKZYBQ.png',
+    link: '/',
+    description: 'We helped Greon increase their MRR 24x in three months.',
+    tag: 'Web Redesign',
+  },
+  {
+    image:
+      'https://framerusercontent.com/images/NSLwmpWswPFqJ2DWd08WvmUIYE.png',
+    link: '/',
+    description:
+      'How Ascend Increased Their Sales by 300% Without Large Social Following.',
+    tag: 'Web Redesign',
+  },
+];
 
 const PricingCard = ({
   tier,
@@ -36,150 +95,97 @@ const PricingCard = ({
   ctaHref,
   onCtaClick,
   customPrice,
+  pricingInfo,
 }: {
-  tier: TierDetails;
-  model: PricedModel;
+  tier?: TierDetails;
+  model?: PricedModel;
   highlight?: boolean;
-  cta: string;
+  cta?: string;
   ctaHref?: string;
   onCtaClick?: () => void;
   customPrice?: string;
+  pricingInfo: {
+    name: string;
+    price: string;
+    items: string[];
+    duration: string;
+    highlight: boolean;
+  };
 }) => {
   const [priceStep, setPriceStep] = useState(0);
   const [showAnnual, setShowAnnual] = useState(true);
-  const hasMonthlyOption =
-    tier.prices && tier.prices?.some((p) => p.price?.monthly);
-  // const quotas = tier.prices[priceStep].quota;
-  // const quotaModels = Object.keys(quotas) as PricedModel[];
+  // const hasMonthlyOption =
+  //   tier.prices && tier.prices?.some((p) => p.price?.monthly);
+  // // const quotas = tier.prices[priceStep].quota;
+  // // const quotaModels = Object.keys(quotas) as PricedModel[];
 
   return (
     <div
       className={cn(
-        'relative flex w-full flex-col items-center gap-4 rounded-lg bg-neutral-1100 py-12 backdrop-blur',
-        {
-          'border border-neutral-900 shadow-2xl': !highlight,
-          'shadow-box': highlight,
-        },
+        `${
+          pricingInfo.highlight ? 'bg-[rgb(157,241,91)]' : 'bg-transparent'
+        } relative flex w-[20rem] flex-col rounded-[20px] p-8 text-[rgb(102,102,102)]`,
       )}
     >
-      {highlight && (
-        <div className="absolute inset-0 z-[-1]">
-          <div className="glow-border glow-border-fuchsia glow-border-founded-lg absolute inset-0 z-0 rounded-lg" />
-        </div>
-      )}
-      <div className="absolute inset-0 rounded-lg bg-neutral-1100" />
-      <h2 className="z-10 flex-none px-4 text-2xl font-semibold text-neutral-300 md:px-8">
-        {tier.name}
-      </h2>
-      <div className="relative z-10 flex h-16 w-full flex-col items-center px-4 md:px-8">
-        <p className="mt-0 text-center text-base text-neutral-500">
-          {tier.description}
-        </p>
-        {hasMonthlyOption && (
-          <div className="absolute -bottom-2 flex items-center">
-            <div>
-              <Segment
-                size="sm"
-                items={['Monthly', 'Annually']}
-                selected={showAnnual ? 1 : 0}
-                id="billing-period"
-                onChange={(i) => setShowAnnual(i === 1)}
-              />
-            </div>
-          </div>
-        )}
+      <span className="text-sm font-semibold">{pricingInfo.name}</span>
+      <div className="mb-6 flex items-end gap-1">
+        <span className="text-[3.4rem] font-bold text-[rgb(51,51,51)]">
+          {pricingInfo.price}{' '}
+        </span>
+        <span className="-translate-y-5 text-sm font-medium">
+          {pricingInfo.duration}
+        </span>
       </div>
-      <div className="z-10 flex h-20 w-full items-center justify-center bg-neutral-900/0 px-4 sm:h-24 md:px-8">
-        {tier.prices && (
-          <div className="relative -mt-4 flex w-full flex-col items-center">
-            <p className="text-[36px] font-semibold text-neutral-300 sm:text-[28px] md:text-[36px]">
-              {customPrice ?? (
-                <>
-                  $
-                  {tier.prices[priceStep].price?.[
-                    showAnnual || !hasMonthlyOption ? 'yearly' : 'monthly'
-                  ]?.amount || 0}
-                  <span className="text-base font-normal text-neutral-500">
-                    /month
-                  </span>
-                </>
-              )}
-            </p>
-            {/* <Flashing active={quotaModels.findIndex((m) => m === model)}>
-              {quotaModels.map((model) => {
-                return (
-                  <p
-                    key={`pricing-quota-${tier.name}-${priceStep}-${model}`}
-                    className="rounded-full bg-sky-600/10 px-3 py-0.5 text-sm text-sky-500"
-                  >
-                    {formatNumQueries(quotas[model])}
-                  </p>
-                );
-              })}
-            </Flashing> */}
-            <>
-              {tier.prices.length > 1 && (
-                <Slider.Root
-                  onValueChange={([p]) => {
-                    setPriceStep(p);
-                  }}
-                  className="absolute inset-x-4 -bottom-7 flex h-5 select-none items-center md:inset-x-8 md:mt-2"
-                  defaultValue={[0]}
-                  min={0}
-                  max={tier.prices.length - 1}
-                  step={1}
-                  aria-label="Price"
-                >
-                  <Slider.Track className="relative h-1 flex-grow rounded-full bg-fuchsia-900/50">
-                    <Slider.Range className="absolute h-full rounded-full bg-fuchsia-700" />
-                  </Slider.Track>
-                  <Slider.Thumb className="block h-4 w-4 rounded-full bg-white" />
-                </Slider.Root>
-              )}
-            </>
-          </div>
-        )}
-      </div>
-      <div className="z-10 flex w-full flex-grow flex-col gap-1">
-        <ul className="flex w-full flex-col gap-1 px-4 md:px-8">
-          {tier.items.map((item, i) => {
-            return (
-              <ListItem
-                size="sm"
-                variant="discreet"
-                key={`pricing-${tier.name}-${i}`}
-              >
-                {typeof item === 'string' ? item : item[model]}
-              </ListItem>
-            );
-          })}
-        </ul>
-        {tier.notes && (
-          <ul className="mt-4 flex w-full flex-grow flex-col gap-1 px-4 md:px-8">
-            {tier.notes.map((note, i) => {
-              return (
-                <li
-                  className="text-xs text-neutral-500"
-                  key={`note-${note}-${i}`}
-                >
-                  {note}
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </div>
-      <div className="z-10 mt-4 w-full px-4 md:px-8">
-        <Button
-          className="w-full"
-          variant={highlight ? 'fuchsia' : 'plain'}
-          href={ctaHref ?? (!onCtaClick ? '/signup' : undefined)}
-          onClick={() => {
-            onCtaClick?.();
-          }}
-        >
-          {cta}
-        </Button>
+      <ul className="mb-10 flex  flex-col gap-3 text-sm font-semibold">
+        {pricingInfo.items.map((item, i) => (
+          <li className="flex items-center gap-2">
+            <CheckCircle
+              width={20}
+              height={20}
+              className={'text-[rgb(51,51,51)]'}
+            />{' '}
+            {item}
+          </li>
+        ))}
+      </ul>
+      <Link
+        href={'/'}
+        className={`w-fit rounded-lg bg-white p-3.5 py-2 text-sm font-semibold  ${
+          pricingInfo.highlight
+            ? 'bg-[#222] text-white'
+            : 'bg-white text-[rgb(17,17,17)]'
+        }`}
+      >
+        Get Started
+      </Link>
+    </div>
+  );
+};
+
+const TestimonialCard: React.FC<{
+  testimonial: {
+    image: string;
+    description: string;
+    tag: string;
+    link: string;
+  };
+}> = ({ testimonial: { description, image, link, tag } }) => {
+  return (
+    <div className="flex h-fit w-full flex-col rounded-2xl bg-[rgb(23,24,26)]  max768:max-w-[min(35rem,90vw)]">
+      <Image
+        src={image}
+        alt="Testimonial Image"
+        className="w-full"
+        width={250}
+        height={250}
+      />
+      <div className="flex flex-col gap-6 py-7 px-8">
+        <span className="text-2xl font-semibold text-[rgb(239,241,242)]">
+          {description}
+        </span>
+        <span className="text-base font-normal text-[rgb(126,127,132)]">
+          {tag}
+        </span>
       </div>
     </div>
   );
@@ -199,6 +205,8 @@ const formatNumStars = (stars: number) => {
 const LandingPage: FC<LandingPageProps> = ({ stars }) => {
   const [model, setModel] = useState<PricedModel>('gpt-3.5-turbo');
 
+  const [autoplaySpeed, setAutoplaySpeed] = useState(0);
+
   useEffect(() => {
     const canvas: any = document.getElementById('animation-canvas');
     if (canvas) {
@@ -207,245 +215,272 @@ const LandingPage: FC<LandingPageProps> = ({ stars }) => {
     }
   }, []);
 
+  const settings: Settings = {
+    dots: false,
+    infinite: true,
+    slidesToShow: logos.length - 1,
+    slidesToScroll: logos.length - 1,
+    autoplay: true,
+    speed: 8000,
+    autoplaySpeed: 8000,
+    waitForAnimate: false,
+    cssEase: 'linear',
+    arrows: false,
+  };
   return (
     <>
       <SharedHead title="Markprompt | Enterprise-grade ChatGPT for your website and docs" />
-      {/* <div className="z-40 bg-fuchsia-700 py-1.5 px-6 sm:px-8">
-        <Link
-          href="/blog/markprompt-qa"
-          className="mx-auto block max-w-screen-xl text-center text-xs font-medium transition hover:opacity-80"
-        >
-          Read our Q&A with Tom Johnson on the future of docs and how Markprompt
-          fits in →
-        </Link>
-      </div> */}
-      <div className="relative z-0 mx-auto min-h-screen max-w-screen-xl px-6 sm:px-8">
-        <Pattern />
+      <div className="relative z-10 mx-auto max-w-screen-xl">
+        {/* <Pattern /> By Krishna*/}
         <LandingNavbar />
         <div className="animate-slide-up">
-          <div className="grid grid-cols-1 gap-8 pb-24 sm:min-h-[calc(100vh-100px)] sm:grid-cols-5">
-            <div className="col-span-3 mt-12 flex flex-col justify-center 2xl:mt-0">
-              {/* <Link href="/blog/introducing-website-sources">
-                <Tag size="base" color="sky">
-                  Introducing website sources →
-                </Tag>
-              </Link> */}
-              <h1 className="gradient-heading mt-6 text-left text-4xl leading-[36px] tracking-[-0.6px] sm:mr-[-50px] sm:text-6xl sm:leading-[64px]">
-                <Balancer>
-                  Enterprise-grade ChatGPT for your website and docs
-                </Balancer>
+          <div className="gap-6 pb-16 pt-20 max1200:pb-12">
+            <div className="mx-auto flex max-w-4xl flex-col items-center justify-center gap-6 2xl:mt-0 max1440:max-w-2xl">
+              <h1 className="text-center text-4xl font-bold leading-[36px] tracking-tighter text-[rgb(239_241_242)] sm:text-[5.7rem] sm:leading-[5.95rem] max1440:text-[4rem] max1440:leading-[4.15rem] max980:text-[3.25rem] max980:leading-[3.4rem]">
+                Build, Train and Deploy ChatGPT for websites
               </h1>
-              <p className="z-20 mt-8 mr-[40px] max-w-screen-md text-left text-base text-neutral-500 sm:mt-4 sm:text-lg">
-                <Balancer ratio={0.5}>
-                  Connect any source of content, from public websites to private
-                  GitHub repos, configure the design and tone, and paste the
-                  code to your website. In minutes, you have a chatbot that
-                  answers all your customers&apos; questions. If not, you will
-                  get notified and can take action.
-                </Balancer>
+              <p className="z-20 mx-auto max-w-[41.5rem] justify-center whitespace-pre-wrap break-words text-center text-base text-[rgb(186_187_195)] sm:text-lg max1200:max-w-[88%] max980:max-w-[35rem]  max980:text-base max768:max-w-[32rem]">
+                {/* <Balancer className=''> */}
+                Connect any source of content, from public websites to private
+                GitHub repos, configure the design and tone, and paste the code
+                to your website. In minutes, you have a chatbot that answers all
+                your customers' questions.
+                {/* </Balancer> */}
               </p>
-              <div className="flex flex-col items-start justify-start gap-4 pt-8 sm:flex-row sm:items-center">
-                <Button variant="cta" buttonSize="lg" href="/signup">
-                  Start for free
-                </Button>
-                <div className="hidden sm:block">
-                  <Button
-                    variant="plain"
-                    buttonSize="lg"
-                    href="https://github.com/motifland/markprompt"
-                    Icon={GitHubIcon}
-                  >
-                    Star on GitHub
-                    <span className="ml-2 text-neutral-600">
-                      {formatNumStars(stars)}
-                    </span>
-                  </Button>
-                </div>
-              </div>
-              <p className="pt-8 text-left text-sm text-neutral-700 sm:pt-8 sm:text-base">
-                Live with
-              </p>
-              <div className="flex flex-row items-center justify-start gap-8 overflow-x-auto pt-4 sm:items-center sm:gap-12 sm:pt-4">
-                <CalIcon className="w-[72px] text-neutral-500 sm:w-[90px]" />
-                <AngeListIcon className="w-[72px] text-neutral-500 sm:w-[90px]" />
-                <ReploIcon className="w-[72px] text-neutral-500 sm:w-[90px]" />
+              <div className="flex flex-col items-center justify-center gap-4 pt-2">
+                <button className="rounded-lg bg-[rgb(157_241_91)] px-7 py-[1.1rem] font-medium text-black  max1200:px-5 max1200:py-3">
+                  Build Your Chatbot Now
+                </button>
+                <p className="text-[rgb(125,127,131)]">
+                  No credit card required
+                </p>
               </div>
             </div>
-            <div className="z-0 col-span-2 hidden h-full sm:block">
-              <div className="animate-scale-bounce relative ml-[-100px] mt-[5%] block h-[90%] w-[calc(100%+200px)] transform-gpu">
-                <canvas id="animation-canvas" />
-              </div>
-            </div>
-          </div>
-          {/* <a
-            href="https://twitter.com/markprompt"
-            className="mx-auto mt-20 flex w-min flex-row items-center gap-2 whitespace-nowrap rounded-full bg-primary-900/20 px-4 py-1 text-sm font-medium text-primary-400 transition hover:bg-primary-900/30"
-          >
-            <TwitterIcon className="h-4 w-4" />
-            Introducing Markprompt
-          </a> */}
-        </div>
-      </div>
-      <VideoSection />
-      <StepsSection />
-      <div className="relative z-0 mx-auto min-h-screen max-w-screen-xl px-6 pt-24 sm:px-8">
-        <h2 className="gradient-heading mt-64 text-center text-4xl">
-          <Balancer>Track usage, get feedback, improve content</Balancer>
-        </h2>
-        <p className="mx-auto mt-4 max-w-screen-sm text-center text-lg text-neutral-500">
-          Your users will be asking lots of questions, and will be expecting
-          quality answers. Use Markprompt&apos;s feedback and analytics features
-          to pinpoint shortcomings in your content, and improve your content.
-        </p>
-        <div className="relative mt-20 h-[600px] w-full overflow-hidden rounded-lg border border-neutral-900">
-          <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/50 p-8">
-            <p className="flex flex-row items-center whitespace-nowrap rounded-full border border-neutral-800 bg-black/80 px-4 py-2 text-lg font-medium text-neutral-300">
-              Coming soon!
-            </p>
-          </div>
-          <div className="sticky inset-x-0 top-0 z-10 flex h-12 flex-none flex-row items-center gap-4 border-b border-neutral-900 px-4 py-2">
-            <MarkpromptIcon className="ml-1 h-6 w-6 text-neutral-300" />
-            <p className="text-sm text-neutral-500">Acme Inc</p>
-          </div>
-          <div className="absolute inset-x-0 top-12 bottom-0 z-0 grid w-full flex-grow grid-cols-4">
-            <div className="hidden h-full flex-col gap-1 border-r border-neutral-900 px-3 py-3 text-sm text-neutral-500 sm:flex">
-              <p className="rounded bg-neutral-900/50 px-2 py-1.5 text-white">
-                Home
-              </p>
-              <p className="px-2 py-1.5">API Keys</p>
-              <p className="px-2 py-1.5">Usage</p>
-              <p className="px-2 py-1.5">Settings</p>
-            </div>
-            <div className="z-20 col-span-4 flex flex-col gap-6 p-8 sm:col-span-3">
-              <AnalyticsExample />
-            </div>
-          </div>
-        </div>
-        <div className="relative flex flex-col items-center">
-          <h2
-            id="pricing"
-            className="gradient-heading mt-40 pt-8 text-center text-4xl"
-          >
-            <Balancer>Generous free-tier, scale with usage</Balancer>
-          </h2>
-          <p className="mx-auto mt-4 max-w-screen-sm text-center text-lg text-neutral-500">
-            Start for free, no credit card required. Scale as you grow.
-          </p>
-          {/* <div className="relative mt-8">
-            <Segment
-              items={modelNames}
-              selected={model === 'gpt-4' ? 1 : model === 'byo' ? 2 : 0}
-              id="billing-period"
-              onChange={(i) =>
-                setModel(i === 0 ? 'gpt-3.5-turbo' : i === 1 ? 'gpt-4' : 'byo')
-              }
-            />
-            <p
-              className={cn(
-                'absolute inset-x-0 -bottom-8 mt-4 transform text-center text-xs text-neutral-600 transition duration-500',
-                {
-                  'translate-y-0 opacity-100': model === 'byo',
-                  'translate-y-1 opacity-0': model !== 'byo',
-                },
-              )}
-            >
-              * BYO: Bring your own API key
-            </p>
-          </div> */}
-          <div className="relative mt-16 grid w-full max-w-screen-xl grid-cols-1 gap-4 sm:grid-cols-4 md:gap-8">
-            <Blurs />
-            <PricingCard
-              tier={TIERS.hobby}
-              cta="Get started with Hobby"
-              model={model}
-              customPrice="Free"
-            />
-            <PricingCard
-              tier={TIERS.starter}
-              cta="Get started with Starter"
-              model={model}
-            />
-            <PricingCard
-              tier={TIERS.pro}
-              highlight
-              cta="Get started with Pro"
-              model={model}
-            />
-            <PricingCard
-              tier={TIERS.enterprise}
-              cta="Contact Sales"
-              onCtaClick={() => {
-                emitter.emit(EVENT_OPEN_CONTACT);
-              }}
-              model={model}
-              customPrice="Custom"
-            />
-          </div>
-        </div>
-        <div className="flex flex-col items-center">
-          <h2 className="gradient-heading mt-40 text-center text-4xl">
-            Open source
-          </h2>
-          <p className="mx-auto mt-4 max-w-md text-center text-lg text-neutral-500">
-            <Balancer>
-              The source code is on GitHub, for you to review, run, and
-              contribute to if you like!
-            </Balancer>
-          </p>
-          <div className="mt-12">
-            <Button
-              variant="plain"
-              buttonSize="lg"
-              href="https://github.com/motifland/markprompt"
-              Icon={GitHubIcon}
-            >
-              Star on GitHub
-              <span className="ml-2 text-neutral-600">
-                {formatNumStars(stars)}
-              </span>
-            </Button>
-          </div>
-        </div>
-        <div className="mt-48 grid grid-cols-1 gap-8 border-t border-neutral-900/50 px-6 pt-12 pb-20 sm:grid-cols-3 sm:py-12 sm:px-8">
-          <div></div>
-          <div className="flex flex-row items-baseline justify-center gap-1 text-center text-sm text-neutral-500">
-            Built by the{' '}
-            <MotifIcon className="inline-block h-4 w-4 translate-y-[3px] transform text-neutral-300" />
-            <a
-              className="border-b border-dotted border-neutral-700 text-neutral-300"
-              href="https://motif.land"
-            >
-              Motif
-            </a>{' '}
-            team
-          </div>
-          <div className="mr-0 flex flex-row items-center justify-center gap-4 text-neutral-700 sm:mr-12 sm:justify-end xl:mr-0">
-            <a
-              className="transition hover:text-neutral-500"
-              href="https://github.com/motifland/markprompt"
-              aria-label="Markprompt on GitHub"
-            >
-              <GitHubIcon className="h-5 w-5" />
-            </a>
-            <a
-              className="transition hover:text-neutral-500"
-              href="https://twitter.com/markprompt"
-              aria-label="Markprompt on Twitter"
-            >
-              <TwitterIcon className="h-5 w-5" />
-            </a>
-            <a
-              className="transition hover:text-neutral-500"
-              href="https://discord.gg/MBMh4apz6X"
-              aria-label="Markprompt on Discord"
-            >
-              <DiscordIcon className="h-5 w-5" />
-            </a>
           </div>
         </div>
       </div>
+      <div className="border-in mx-auto max-w-screen-xl rounded-t-3xl border border-[#272626]  border-b-transparent py-12 max1440:max-w-4xl max1200:max-w-[46rem] max980:max-w-[35rem] max768:max-w-[80%]">
+        <Image
+          src={
+            'https://framerusercontent.com/images/8Qgbos0FKBX6cqSknqrvekMeTL8.png'
+          }
+          alt="Image"
+          width={1800}
+          height={1800}
+          className="h-fit w-full object-cover outline"
+        />
+      </div>
+      {/* AUTOPLAY SLIDER */}
+      {/* <div className="h-32 !w-full pb-20">
+        <Slider {...settings}>
+          {logos.map((logo) => (
+            <span>{logo}</span>
+          ))}
+        </Slider>
+      </div> */}
+
+      {/* Info Tabs */}
+      <div className="mx-auto flex max-w-screen-xl flex-wrap justify-center gap-12 border-b border-[#141414] px-14 py-20">
+        <div className="flex max-w-xs items-start gap-6 max768:flex-col max768:items-center">
+          <div>
+            <GitHubIcon className="h-9 w-9 translate-y-1 text-[rgb(157,241,91)]" />
+          </div>
+          <div className="flex flex-col gap-4 max768:items-center max768:text-center">
+            <h3 className="text-xl font-semibold">Enter your data source</h3>
+            <span className="text-base leading-6 text-[rgb(185_187_195)]">
+              We will automatically fetch all the pages on your website and show
+              them to you
+            </span>
+          </div>
+        </div>
+        <div className="flex max-w-xs items-start gap-6 max768:flex-col max768:items-center">
+          <div>
+            <GitHubIcon className="h-9 w-9 translate-y-1 text-[rgb(157,241,91)]" />
+          </div>
+          <div className="flex flex-col gap-4 max768:items-center max768:text-center">
+            <h3 className="text-xl font-semibold">Start Training</h3>
+            <span className="text-base leading-6 text-[rgb(185_187_195)]">
+              Select the pages you want the chatbot to train on and click on
+              Start Training.
+            </span>
+          </div>
+        </div>
+        <div className="flex max-w-xs items-start gap-6 max768:flex-col max768:items-center">
+          <div>
+            <GitHubIcon className="h-9 w-9 translate-y-1 text-[rgb(157,241,91)]" />
+          </div>
+          <div className="flex flex-col gap-4 max768:items-center max768:text-center">
+            <h3 className="text-xl font-semibold">Your own AI chatbot</h3>
+            <span className="text-base leading-6 text-[rgb(185_187_195)]">
+              You now have your own chatbot that can answer anything related to
+              your website content.
+            </span>
+          </div>
+        </div>
+      </div>
+      {/* Natural Language Understanding */}
+      <div className="mx-auto flex max-w-[75%]  items-center justify-between gap-12 py-36 max1200:max-w-full max1200:flex-col-reverse">
+        <div className="flex w-[60%] flex-col justify-center gap-6  max1200:w-[min(90vw,34rem)] max1200:text-center">
+          <h2 className="text-[3.5rem] font-semibold leading-[3.8rem]">
+            Natural Language Understanding
+          </h2>
+          <span className="text-base leading-6 text-[rgb(186_187_195)]">
+            Our chatbot understands and interprets user queries with remarkable
+            accuracy. It comprehends the nuances of human language, ensuring
+            smooth and effective communication.
+          </span>
+          <Link
+            href={'/'}
+            className="mt-4 text-base font-bold text-[rgb(157,241,91)]"
+          >
+            Start your free trial
+          </Link>
+        </div>
+        <div className="flex w-1/2 justify-center max1200:w-full">
+          <Image
+            src={
+              '	https://framerusercontent.com/images/BdZoXGrJGAZLrcsxVkLxOnqZMfw.png?scale-down-to=512'
+            }
+            alt="SS"
+            width={300}
+            height={300}
+            className="h-[20rem] w-[22rem]"
+          />
+        </div>
+      </div>
+      {/* Contextual Responses*/}
+
+      <div className="mx-auto flex max-w-[75%] items-center justify-center gap-6 py-36 pt-6 max1200:max-w-full max1200:flex-col max1200:items-center">
+        <div className="flex w-[40%] justify-start max1200:w-full max1200:justify-center">
+          <Image
+            src={
+              'https://framerusercontent.com/images/rWjrgizKO1VMiSq61WQoNReCIs.png'
+            }
+            alt="S2"
+            width={300}
+            height={300}
+            className="h-[20rem] w-[22rem]"
+          />
+        </div>
+        <div className="flex w-[45%] flex-col gap-6 max1200:w-[min(90vw,34rem)] max1200:items-center max1200:text-center">
+          <h2 className="text-[3.5rem] font-semibold leading-[3.8rem]">
+            Contextual Responses
+          </h2>
+          <span className="w-[85%] text-base leading-6 text-[rgb(186_187_195)]">
+            With deep learning capabilities, our chatbot maintains context
+            throughout conversations. It can remember past interactions and
+            provide relevant and personalized responses, creating a seamless
+            user experience.
+          </span>
+          <Link
+            href={'/'}
+            className="mt-4 text-base font-bold text-[rgb(157,241,91)]"
+          >
+            Start your free trial
+          </Link>
+        </div>
+      </div>
+      {/* Easy Deployment*/}
+      <div className="mx-auto flex max-w-[75%] items-center justify-center gap-6 py-36 pt-6 max1200:max-w-full max1200:flex-col-reverse max1200:items-center">
+        <div className="flex w-[40%] flex-col justify-center gap-6 max1200:w-[min(90vw,34rem)] max1200:items-center max1200:text-center">
+          <h2 className="text-[3.5rem] font-semibold leading-[3.8rem]">
+            Easy Deployment
+          </h2>
+          <span className="text-base leading-6 text-[rgb(186_187_195)]">
+            When it comes to adding our chatbot to your website, all you need to
+            do is copy and paste the provided code.
+          </span>
+          <Link
+            href={'/'}
+            className="mt-4 text-base font-bold text-[rgb(157,241,91)]"
+          >
+            Start your free trial
+          </Link>
+        </div>
+        <div className="flex w-1/2 justify-center  max1200:w-full max1200:justify-center">
+          <Image
+            src={
+              '	https://framerusercontent.com/images/BdZoXGrJGAZLrcsxVkLxOnqZMfw.png?scale-down-to=512'
+            }
+            alt="SS"
+            width={300}
+            height={300}
+            className="h-[20rem] w-[22rem]"
+          />
+        </div>
+      </div>
+      {/* Pricing Section */}
+      <div className="mx-auto flex max-w-screen-xl items-center justify-center gap-6 py-36 pt-6 max1200:flex-col">
+        {PricingTiers.map((pricing, i) => (
+          <PricingCard pricingInfo={pricing} key={i} />
+        ))}
+      </div>
+      {/* <VideoSection /> */}
+      {/* <StepsSection /> */}
+      <div className="mx-auto flex max-w-[75%] flex-col gap-28 rounded-2xl border border-[#141414] p-11 max1200:max-w-[85%]">
+        <h3 className="w-[90%] text-[3.5rem] font-semibold leading-[4.1rem] text-white max980:text-5xl max980:leading-[1.15] max768:text-center">
+          Say goodbye to the hassle of managing multiple accounts across
+          different financial institutions.
+        </h3>
+        <div className="flex flex-wrap justify-between gap-y-5 max768:justify-center">
+          <div className="flex max-w-xs flex-col gap-4 max768:items-center">
+            <span className="text-[3.5rem] font-semibold text-[rgb(157,241,91)]  max980:text-5xl max980:leading-[1.15]">
+              2x
+            </span>
+            <span className="text-[rgb(186,187,195)] max768:text-center">
+              A multiplier that suggests double the performance when compared
+            </span>
+          </div>
+          <div className="flex max-w-xs flex-col gap-4 max768:items-center">
+            <span className="text-[3.5rem] font-semibold text-[rgb(157,241,91)]  max980:text-5xl max980:leading-[1.15]">
+              97.5%{' '}
+            </span>
+            <span className="text-[rgb(186,187,195)] max768:text-center">
+              Use a percentage number to suggest the increase in performance to
+              expect.{' '}
+            </span>
+          </div>
+          <div className="flex max-w-xs flex-col gap-4 max768:items-center">
+            <span className="text-[3.5rem] font-semibold text-[rgb(157,241,91)]  max980:text-5xl max980:leading-[1.15]">
+              4.1M
+            </span>
+            <span className="text-[rgb(186,187,195)] max768:text-center">
+              Use a percentage number to suggest the increase in performance to
+              expect.{' '}
+            </span>
+          </div>
+        </div>
+      </div>
+      {/* TESTIMONIALS */}
+
+      <div className="mx-auto my-36 flex max-w-[min(75%,98vw)] gap-28 rounded-2xl py-12 max1200:flex-wrap">
+        <div className="flex max-w-xs flex-col">
+          <div className="flex flex-col gap-2.5">
+            <h3 className="text-[3.5rem] font-semibold leading-[3.8rem] text-[rgb(239,241,242)]">
+              How we help others grow.
+            </h3>
+            <span className="mt-4 text-base leading-8 text-[rgb(186_187_195)]">
+              Get great news and insight from our expert team.
+            </span>
+          </div>
+          <Link
+            className="mt-auto text-base font-semibold text-[rgb(157,241,91)]"
+            href={'/'}
+          >
+            See all case studies
+          </Link>
+        </div>
+        <div className="flex grow gap-10 max768:flex-col max768:items-center">
+          {testimonials.map((testimonial, i) => (
+            <TestimonialCard testimonial={testimonial} key={i} />
+          ))}
+        </div>
+      </div>
+      <AppFooter />
     </>
   );
 };
 
 export default LandingPage;
+
+// const PricingCard = () => {};
