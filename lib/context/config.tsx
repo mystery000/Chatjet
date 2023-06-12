@@ -26,6 +26,7 @@ export type State = {
   colors: ThemeColors;
   isDark: boolean;
   placeholder: string;
+  chatbotHeader: string;
   iDontKnowMessage: string;
   referencesHeading: string;
   loadingHeading: string;
@@ -37,6 +38,7 @@ export type State = {
   setDark: (dark: boolean) => void;
   setSize: (size: Theme['size']) => void;
   setPlaceholder: (placeholder: string) => void;
+  setChatbotHeader: (chatHeader: string) => void;
   setIDontKnowMessage: (iDontKnowMessage: string) => void;
   setReferencesHeading: (referencesHeading: string) => void;
   setLoadingHeading: (loadingHeading: string) => void;
@@ -63,6 +65,7 @@ const initialState: State = {
   colors: defaultTheme.colors.light,
   isDark: false,
   placeholder: '',
+  chatbotHeader: '',
   iDontKnowMessage: '',
   referencesHeading: '',
   loadingHeading: '',
@@ -74,6 +77,7 @@ const initialState: State = {
   setDark: () => {},
   setSize: () => {},
   setPlaceholder: () => {},
+  setChatbotHeader: () => {},
   setIDontKnowMessage: () => {},
   setReferencesHeading: () => {},
   setLoadingHeading: () => {},
@@ -93,6 +97,7 @@ export const isDefaultCustomConfig = (config: ModelConfig) => {
 
 export const CONFIG_DEFAULT_VALUES = {
   placeholder: 'Ask me anything…',
+  chatbotHeader: 'Chatbase',
   iDontKnowMessage: 'Sorry, I am not sure how to answer that.',
   referencesHeading: 'Answer generated from the following pages:',
   loadingHeading: 'Fetching relevant pages…',
@@ -118,7 +123,10 @@ const ConfigContextProvider = (props: PropsWithChildren) => {
     `${project?.id ?? 'undefined'}:config:placeholder`,
     CONFIG_DEFAULT_VALUES.placeholder,
   );
-
+  const [chatbotHeader, setChatbotHeader] = useLocalStorage<string>(
+    `${project?.id ?? 'undefined'}:config:chatbotHeader`,
+    CONFIG_DEFAULT_VALUES.chatbotHeader,
+  );
   const [iDontKnowMessage, setIDontKnowMessage] = useLocalStorage<string>(
     `${project?.id ?? 'undefined'}:config:i-dont-know-message`,
     CONFIG_DEFAULT_VALUES.iDontKnowMessage,
@@ -201,6 +209,7 @@ const ConfigContextProvider = (props: PropsWithChildren) => {
         theme,
         isDark,
         placeholder,
+        chatbotHeader,
         iDontKnowMessage,
         referencesHeading,
         loadingHeading,
@@ -213,6 +222,7 @@ const ConfigContextProvider = (props: PropsWithChildren) => {
         setDark,
         setSize,
         setPlaceholder,
+        setChatbotHeader,
         setIDontKnowMessage,
         setReferencesHeading,
         setLoadingHeading,
@@ -237,7 +247,6 @@ export const useConfigContext = (): State => {
 };
 
 export const ConfigContext = createContext<State>(initialState);
-
 ConfigContext.displayName = 'ConfigContext';
 
 export const ManagedConfigContext: FC<PropsWithChildren> = ({ children }) => (

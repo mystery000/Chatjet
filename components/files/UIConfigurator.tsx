@@ -15,6 +15,7 @@ import { AccordionContent, AccordionTrigger } from '../ui/Accordion';
 import { ButtonOrLinkWrapper } from '../ui/Button';
 import ColorPickerInput from '../ui/ColorPickerInput';
 import Input from '../ui/Input';
+import Button from '../ui/Button';
 import { Tag } from '../ui/Tag';
 
 type ThemeColorPickerProps = {
@@ -48,8 +49,10 @@ export const UIConfigurator: FC<UIConfiguratorProps> = () => {
     includeBranding,
     isInstantSearchEnabled,
     placeholder,
+    chatbotHeader,
     iDontKnowMessage,
     setPlaceholder,
+    setChatbotHeader,
     referencesHeading,
     setIDontKnowMessage,
     setReferencesHeading,
@@ -77,6 +80,15 @@ export const UIConfigurator: FC<UIConfiguratorProps> = () => {
           value={placeholder}
           onChange={(event: ChangeEvent<HTMLInputElement>) => {
             setPlaceholder(event.target.value);
+          }}
+        />
+      </Row>
+      <Row label="Chatbot Header">
+        <Input
+          inputSize="sm"
+          value={chatbotHeader}
+          onChange={(event: ChangeEvent<HTMLInputElement>) => {
+            setChatbotHeader(event.target.value);
           }}
         />
       </Row>
@@ -123,6 +135,11 @@ export const UIConfigurator: FC<UIConfiguratorProps> = () => {
             <Switch.Thumb className="block h-4 w-4 translate-x-[1px] transform rounded-full bg-white transition data-[state='checked']:translate-x-[13px]" />
           </Switch.Root>
         </div>
+      </Row>
+      <Row label="Chatbot Avatar">
+        <Button className="w-full" variant={'bordered'} loading={false}>
+          Upload
+        </Button>
       </Row>
       <Accordion.Root className="mt-2 w-full" type="single" collapsible>
         <Accordion.Item value="options">

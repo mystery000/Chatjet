@@ -303,6 +303,7 @@ const PlaygroundDashboard: FC<PlaygroundDashboardProps> = ({
     includeBranding,
     modelConfig,
     placeholder,
+    chatbotHeader,
     iDontKnowMessage,
     referencesHeading,
     loadingHeading,
@@ -795,6 +796,7 @@ const PlaygroundDashboard: FC<PlaygroundDashboardProps> = ({
                       iDontKnowMessage={iDontKnowMessage}
                       theme={theme}
                       placeholder={placeholder}
+                      chatbotHeader={chatbotHeader}
                       isDark={isDark}
                       modelConfig={modelConfig}
                       referencesHeading={referencesHeading}

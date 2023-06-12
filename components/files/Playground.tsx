@@ -98,6 +98,7 @@ type PlaygroundProps = {
   iDontKnowMessage?: string;
   modelConfig?: ModelConfig;
   placeholder?: string;
+  chatbotHeader?: string;
   referencesHeading?: string;
   loadingHeading?: string;
   inputClassName?: string;
@@ -130,6 +131,7 @@ export const Playground = forwardRef(
       iDontKnowMessage,
       modelConfig,
       placeholder,
+      chatbotHeader,
       referencesHeading,
       loadingHeading,
       inputClassName,
@@ -373,7 +375,7 @@ export const Playground = forwardRef(
         >
           <div className="flex flex-row items-center gap-2 text-black/90">
             <img src="/static/favicons/favicon.ico" className="h-8 w-8" />
-            <div className="font-bold">Chatbase</div>
+            <div className="font-bold">{chatbotHeader}</div>
           </div>
           <div
             className="flex-none cursor-pointer rounded p-1 transition hover:opacity-60"
