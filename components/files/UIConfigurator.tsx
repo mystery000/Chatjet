@@ -17,6 +17,14 @@ import ColorPickerInput from '../ui/ColorPickerInput';
 import Input from '../ui/Input';
 import Button from '../ui/Button';
 import { Tag } from '../ui/Tag';
+import dynamic from 'next/dynamic';
+
+const AvatarAddDialog = dynamic(
+  () => import('@/components/dialogs/project/Avatar'),
+  {
+    loading: () => <p className="p-4 text-sm text-neutral-500">Loading...</p>,
+  },
+);
 
 type ThemeColorPickerProps = {
   colors: ThemeColors;
@@ -137,9 +145,11 @@ export const UIConfigurator: FC<UIConfiguratorProps> = () => {
         </div>
       </Row>
       <Row label="Chatbot Avatar">
-        <Button className="w-full" variant={'bordered'} loading={false}>
-          Upload
-        </Button>
+        <AvatarAddDialog>
+          <Button className="w-full" variant={'bordered'} loading={false}>
+            Upload
+          </Button>
+        </AvatarAddDialog>
       </Row>
       <Accordion.Root className="mt-2 w-full" type="single" collapsible>
         <Accordion.Item value="options">

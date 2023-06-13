@@ -22,7 +22,7 @@ import { getAppOrigin } from '@/lib/utils.edge';
 import { ModelConfig, ReferenceInfo } from '@/types/types';
 import { NoAutoInput } from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
-// import useMessages from '@/lib/hooks/use-messages';
+import useProject from '@/lib/hooks/use-project';
 
 type CaretProps = {
   color?: string;
@@ -154,6 +154,7 @@ export const Playground = forwardRef(
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const _iDontKnowMessage = iDontKnowMessage || I_DONT_KNOW;
     const colors = isDark ? theme?.colors.dark : theme?.colors.light;
+    const { project } = useProject();
 
     const [messages, setMessages] = useState<
       { isChatbot: boolean; text: string }[]
@@ -374,7 +375,11 @@ export const Playground = forwardRef(
           }}
         >
           <div className="flex flex-row items-center gap-2 text-black/90">
-            <img src="/static/favicons/favicon.ico" className="h-8 w-8" />
+            <img
+              src={`${project?.avatar || '/static/favicons/favicon.ico'}`}
+              alt="No Avatar"
+              className="h-8 w-8"
+            />
             <div className="font-bold">{chatbotHeader}</div>
           </div>
           <div

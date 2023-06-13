@@ -222,7 +222,7 @@ export const getFileType = (name: string): FileType => {
 };
 
 export const SUPPORTED_EXTENSIONS = ['md', 'mdx', 'mdoc', 'txt', 'html', 'htm'];
-
+export const AVATAR_SUPPORTED_EXTENSIONS = ['png', 'jpg', 'jpeg', 'bmp', 'ico'];
 export const isSupportedFileType = (pathOrName: string): boolean => {
   const extension = getFileExtension(pathOrName);
   if (!extension) {

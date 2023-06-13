@@ -116,6 +116,7 @@ export interface Database {
           is_starter: boolean
           markprompt_config: Json | null
           name: string
+          avatar: string | null
           openai_key: string | null
           private_dev_api_key: string
           public_api_key: string
@@ -130,6 +131,7 @@ export interface Database {
           is_starter?: boolean
           markprompt_config?: Json | null
           name: string
+          avatar?: string | null
           openai_key?: string | null
           private_dev_api_key: string
           public_api_key: string
@@ -144,6 +146,7 @@ export interface Database {
           is_starter?: boolean
           markprompt_config?: Json | null
           name?: string
+          avatar?: string | null
           openai_key?: string | null
           private_dev_api_key?: string
           public_api_key?: string
